@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>All</title>
+  <link rel="icon" type="image/png" href="../static/icons8.png">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="../static/assets/custom.js"></script>
+</head>
+<body class="bg-black">
+
+    <div class="container-fluid">
+        <div class="row p-5">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link active btn-info" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Rag Data & Response</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Video Summarization</button>
+                    </li>
+
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Translation</button>
+                    </li>
+
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-transcription-tab" data-bs-toggle="pill" data-bs-target="#pills-transcription" type="button" role="tab" aria-controls="pills-transcription" aria-selected="false">Transcription</button>
+                      </li>
+
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-fake_video-tab" data-bs-toggle="pill" data-bs-target="#pills-fake_video" type="button" role="tab" aria-controls="pills-fake_video" aria-selected="false">Fake Video Detection</button>
+                      </li>
+
+
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-video_tool-tab" data-bs-toggle="pill" data-bs-target="#pills-video_tool" type="button" role="tab" aria-controls="pills-video_tool" aria-selected="true">Video Tools</button>
+                      </li>
+                      
+  
+                      
+
+                </ul>
+                  <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                        <div class="row">
+                            <div class="col-md-6 border border-white p-5">
+                                <h3 class="text-center">Rag Input Data</h3>
+
+                                <h2>Upload</h2>
+                                <form id="uploadForm">
+                                    <input type="file" id="allFile" name="all_files" required class="form-control">
+                                    <button type="submit" class="btn btn-secondary mt-3">Upload</button>
+                                </form>
+
+                            </div>
+                            <div class="col-md-6 border border-white p-5">
+                                <h3 class="text-center">Rag Response</h3>
+                                <h2>Results</h2>
+                                <form id="queryForm">
+                                    <input type="text" id="user_query" name="query" placeholder="Enter your query" class="form-control">
+                                    <button type="submit" id="rag_submit" class="btn btn-info mt-3">Submit</button>
+                                    <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img mt-3" id="loader_for_rag_response" width="80px" style="display: none;">
+                                </form>
+                            
+                                <p id="statusMessage" class="text-white mt-3"></p>
+
+                    
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <form id="uploadvideo">
+                                    <input type="file" id="video_file" name="video_file" required class="form-control">
+                                    <button type="submit" id="Summarization_submit" class="btn btn-success mt-4">Upload</button>
+                                    <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img mt-4" id="loader" width="80px" style="display: none;">
+                                </form>
+                             
+                                <p id="statusMessage_summarization" class="text-white"></p>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+
+
+                        <div class="d-flex align-items-start mt-3">
+                            <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                              <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Text Based Translation</button>
+                              <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">File Based Translation</button>
+   
+                            </div>
+                            <div class="tab-content" id="v-pills-tabContent">
+                              <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab" style="width: 900px;">
+                                
+                                
+                                
+                                <form id="textForm">
+                                <div class="row">
+                                 
+                                    <div class="col-md-2"></div>
+
+                                    <div class="col-md-4">
+                                        <h4 class="text-center">Source language</h4>
+
+                                        <select class="form-select" aria-label="Default select example" id="src_language">
+                                            <option selected value="">Open this select menu</option>
+                                            <option value="eng_Latn">English</option>
+                                            <option value="urd_Arab">Urdu</option>
+                                            <option value="pbt_Arab">Pashto</option>
+                                          </select>
+
+
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <h4 class="text-center">Target language</h4>
+
+                                        <select class="form-select" aria-label="Default select example" id="tgt_language">
+                                            <option selected>Open this select menu</option>
+                                            <option value="arb_latn">Arabic</option>
+                                            <option value="eng_Latn">English</option>
+                                            <option value="urd_Arab">Urdu</option>
+                                          </select>
+                                    </div>
+                                
+                             
+                                    
+                                    <div class="col-md-2"></div>
+                                
+                               
+                                </div>
+                           
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <textarea class="form-control" placeholder="add input text" id="text" style="height: 100px"></textarea>
+                                            <label for="floatingTextarea2">Source Text</label>
+                                          </div>
+
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <textarea class="form-control" placeholder="translated text" id="floatingTextarea2" style="height: 100px"></textarea>
+                                            <label for="floatingTextarea2">Translated Text</label>
+                                          </div>
+                                          <!-- <button class="btn btn-primary mt-3 float-end">Copy Text</button> -->
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-4 d-flex">
+                                        <button type="submit" id="translation_submit" class="btn btn-warning text-center d-block m-auto mt-3">Submit</button>
+
+                                        <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img" id="loader_for_translation" width="80px" style="display: none;">
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="button" class="btn btn-success mt-3" style="float:right;">Copy Translated Text</button>
+                                    </div>
+                                </div>
+                            </form>
+
+
+
+
+
+                 
+                              </div>
+                              <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab" style="width: 900px;">
+
+                                <form id="translation_form" enctype="multipart/form-data">
+                                    <div class="row">
+                                     
+                                        <div class="col-md-2"></div>
+    
+                                        <div class="col-md-4">
+                                            <h4 class="text-center">Source language</h4>
+    
+                                            <select class="form-select" aria-label="Default select example" id="src_language_file">
+                                                <option selected value="">Open this select menu</option>
+                                                <option value="eng_Latn">English</option>
+                                                <option value="urd_Arab">Urdu</option>
+                                                <option value="pbt_Arab">Pashto</option>
+                                              </select>
+    
+    
+                                        </div>
+    
+                                        <div class="col-md-4">
+                                            <h4 class="text-center">Target language</h4>
+    
+                                            <select class="form-select" aria-label="Default select example" id="tgt_language_file">
+                                                <option selected>Open this select menu</option>
+                                                <option value="arb_latn">Arabic</option>
+                                                <option value="eng_Latn">English</option>
+                                                <option value="urd_Arab">Urdu</option>
+                                              </select>
+                                        </div>
+                                    
+                                 
+                                        
+                                        <div class="col-md-2"></div>
+                                    
+                                   
+                                    </div>
+                               
+                                    <div class="row mt-4">
+                                        <div class="col-md-12">
+                          
+                                          
+                                                <input type="file" id="translation_file" name="translation_file" required class="form-control">
+                                                <button type="submit" id="translation_file_submit" class="btn btn-warning mt-4" style="width: 80px;">submit</button>
+                                              
+                                                <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img mt-4" id="loader_for_file_translation" width="80px" style="display: none;">
+
+                                            
+                                        </div>
+                               
+                                    </div>
+
+
+                                </form>
+    
+                       
+
+
+                              </div>
+ 
+                            </div>
+                          </div>
+
+
+
+                
+                    </div>
+                  
+
+                    <div class="tab-pane fade" id="pills-transcription" role="tabpanel" aria-labelledby="pills-transcription-tab">
+                        <h3>This is transcription</h3>
+                        <form id="uploadaudio" class="mt-4" style="gap: 10px;">
+                        <div class="row">
+
+                         
+                            <div class="col-md-4">
+
+                                <label>Select Source language</label>
+                                <select class="form-select" aria-label="Default select example" id="trans_language">
+                                    <option selected>Open this select menu</option>
+                                    <option value="en">English</option>
+                                    <option value="ur">Urdu</option>
+                                  </select>
+
+
+                            </div>
+                            <div class="col-md-6">
+                                <label>Select Audio file</label>
+                                <input type="file" id="audio_file" name="audio_file" required class="form-control">
+
+                            </div>
+
+                            <div class="col-md-1 justify-content-center align-items-center d-flex" style="height: 80px;">
+
+                                <button type="submit" id="transcription_submit" class="btn btn-secondary">Upload</button>
+                                    
+                                <!-- Ensure loader is initially hidden -->
+                           
+                            </div>
+                            <div class="col-md-1 d-inline">
+                                <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img" id="loader_for_transcription" width="80px" style="display: none;">
+                            </div>
+
+                            
+                           
+                        </div>
+                    </form>
+
+                        <div class="row  mt-3">
+
+                        
+                        
+                        <div class="col-md-2"></div>
+                        
+                        
+                        <div class="col-md-8">
+                            
+                            <div class="form-floating">
+                                <textarea class="form-control" placeholder="Transcription" id="transcription_results" style="height: 100px;"></textarea>
+                                <label for="transcription_results">Transcription</label>
+                              </div>
+
+                        </div>
+                        <div class="col-md-2"></div>
+
+
+                    </div>
+
+                    </div>
+
+
+                    <div class="tab-pane fade" id="pills-fake_video" role="tabpanel" aria-labelledby="pills-fake_video-tab">
+                        
+                        <h3>Fake video</h3>
+
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+                                <form id="fakevideo_upload" enctype="multipart/form-data">
+                                    <input type="file" id="fake_video_file" name="fake_video_file" required class="form-control">
+                                    <button type="submit" id="fake_submit" class="btn btn-secondary mt-3">Upload</button>
+                                    <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img mt-3" id="loader_for_fakevideo" width="80px" style="display: none;">
+                                </form>
+
+                                <p id="statusMessage222" class="text-white"></p>
+
+                                <!-- <p id="statusMessage"></p> -->
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+                    
+                    </div>
+
+
+
+                    <div class="tab-pane fade" id="pills-video_tool" role="tabpanel" aria-labelledby="pills-video_tool-tab">
+                        <h3>Video tool</h3>
+
+
+                        <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link active" id="pills-video_converter-tab" data-bs-toggle="pill" data-bs-target="#pills-video_converter" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Video Converter</button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link" id="pills-video_compression-tab" data-bs-toggle="pill" data-bs-target="#pills-video_compression" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Video Compression</button>
+                            </li>
+ 
+                          </ul>
+
+
+
+                          <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-video_converter" role="tabpanel" aria-labelledby="pills-video_converter-tab">
+
+                                <form id="video_converter" enctype="multipart/form-data">
+                                <div class="row">
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-4">
+
+                                     
+                                            <label for="formatSelect" class="form-label">Select file</label>
+                                            <input type="file" id="video_converter_file" name="video_converter_file" required class="form-control">
+                                        
+                                            <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img mt-3" id="loader_for_fakevideo" width="80px" style="display: none;">
+                                       
+
+                                    </div>
+                                    <div class="col-md-4">
+
+                                        <label for="video_format" class="form-label">Target Format</label>
+                                        <select class="form-select" id="video_format" required>
+                                            <option value="" selected>Select format</option>
+                                            <option value="mp4">MP4</option>
+                                            <option value="avi">AVI</option>
+                                            <option value="mov">MOV</option>
+                                            <option value="mkv">MKV</option>
+                                        </select>
+
+                                        
+                                    </div>
+                                    <!-- <div class="col-md-2"> <button type="submit" id="converter_submit" class="btn btn-secondary mt-3">Upload</button></div> -->
+                                    <div class="col-md-2 d-flex flex-column justify-content-end">
+                                        <button type="submit" id="converter_submit" class="btn btn-secondary mt-3">Upload</button>
+                                    </div>
+                                    
+                                </div>
+                              
+                            </form>
+
+                            <div class="row mt-3">
+                                <div class="col-md-2"></div>
+                                <div class="col-md-8">
+
+
+                                    <div class="progress" id="progressBarContainer" style="display:none;">
+                                        <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                      </div>
+        
+                                    <p id="statusMessage_video_converter" class="text-white"></p>
+
+
+                                </div>
+
+                                <div class="col-md-2"></div>
+                            </div>
+
+
+
+                            </div>
+
+                            <div class="tab-pane fade" id="pills-video_compression" role="tabpanel" aria-labelledby="pills-video_compression-tab">...</div>
+                          
+                          </div>
+
+
+
+
+
+
+                    </div>
+
+
+
+
+                </div>
+
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+ 
+  
+
+</body>
+</html>
