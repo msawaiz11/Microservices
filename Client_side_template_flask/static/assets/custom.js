@@ -433,6 +433,10 @@ $(document).ready(function(){
         
 
 
+        function updateProgressBar_compress(percentage) {
+            $("#progressBar_compresser").css('width', percentage + '%').attr('aria-valuenow', percentage).text(percentage + '%');
+        }
+        
 
 
 
@@ -581,4 +585,132 @@ $(document).ready(function(){
 
         // video converter jquery close //
 
+
+
+
+        // video compresser jquery code open //
+
+
+        document.getElementById('video_compresser_file').addEventListener('change', function(e) {
+            var fileInput = e.target;  // Get the file input element itself
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0]; // Get the first file
+        
+                // Get the file name and extension
+                var fileName = file.name;
+                var fileExtension = fileName.split('.').pop().toLowerCase();
+                console.log("File Extension: ", fileExtension);
+        
+                // Optionally: Validate the file extension
+                const validation = validateVideoFile(file);
+                if (!validation.valid) {
+                    alert(validation.error);
+                    e.target.value = ''; // Reset the input field
+                    return; // Stop the process if the validation fails
+                }
+        
+
+        
+                // Update the dropdown options
+
+            }
+        });
+        
+
+
+
+
+
+
+        $(document).on("submit", "#video_compresser", function (event) {
+
+            $("#compresser_submit").prop('disabled', true);
+            $('.video-info').hide();
+            console.log("Form submitted via event delegation");
+            event.preventDefault();
+        
+            $("#progressBarContainer_compresser").show();
+            updateProgressBar_compress(0);  // Start with 0% progress
+
+
+        
+            var formData = new FormData();
+            var fileInput = $("#video_compresser_file")[0].files[0];
+            const compressionRate = document.getElementById('compressionRate').value;
+            
+            console.log("compressionRate",compressionRate);
+            
+
+            console.log("fileinput", fileInput);
+        
+            if (!fileInput) {
+                $("#statusMessage_video_compresser").text("Please select a file.");
+                return;
+            }
+        
+            formData.append("video_compresser_file", fileInput);
+            formData.append("compress_rate", compressionRate);
+            console.log("Sending request...");
+        
+            // Simulate the progress updates right after clicking the button
+
+
+            updateProgressBar_compress(10);  // Start progress immediately at 10%
+        
+            // Simulate a step-by-step progress (adjust these intervals as needed)
+            setTimeout(function() {
+                updateProgressBar_compress(30);  // 30% after 2 seconds
+                setTimeout(function() {
+                    updateProgressBar_compress(60);  // 60% after 2 more seconds
+                    setTimeout(function() {
+                        updateProgressBar_compress(90);  // 90% after another 2 seconds
+                    }, 5000);
+                }, 4000);
+            }, 5000);
+        
+
+
+
+            $.ajax({
+                url: "/Video_Compresser",
+                type: "POST",
+                data: formData,
+                processData: false, // Prevent jQuery from processing data
+                contentType: false, // Let the browser set the content type
+                success: function(response) {
+                    $("#compresser_submit").prop('disabled', false);
+                    console.log("response", response);
+                    updateProgressBar_compress(100); 
+
+                    $("#progressBarContainer_compresser").hide();
+
+                    if (response && response.download_url) {
+                        var downloadLink = $("<a></a>").attr({
+                            href: response.download_url,
+                            download: response.filename  // Use the filename from the response for the download
+                        }).addClass("btn btn-warning").text("Download Compress Video");
+
+                        $("#statusMessage_video_compresser").html("Video Compression completed. ").append(downloadLink);
+                    } else {
+                        $("#statusMessage_video_compresser").text("No result found.");
+                    }
+                    // https://github.com/msawaiz11/Microservices
+
+
+
+
+                },
+                error: function(xhr) {
+                    $("#statusMessage_video_compresser").text("Error: " + xhr.responseJSON.error);
+                    updateProgressBar_compress(0);  // Reset progress bar on error
+
+                
+                }
+            });
+        });
+        
+
+
+        // video compresser jquery code close //
 })

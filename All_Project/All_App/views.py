@@ -13,7 +13,8 @@ from All_App.utils.utils import (file_already_processed, mark_file_as_processed,
 
 
 from All_App.tasks import (Audio_Video_Transcription_celery, Text_Translation_celery,
-                            analyze_video, video_summarize_celery ,retrieve_and_generate_response_celery, Video_Converter_Celery)
+                            analyze_video, video_summarize_celery ,
+                            retrieve_and_generate_response_celery, Video_Converter_Celery, Video_Compress_Celery)
 
 ##### rag libraries #####
 from dotenv import load_dotenv
@@ -306,6 +307,43 @@ class Audio_Transcription(APIView):
     
 
 
+
+
+class Video_Compresser(APIView):
+
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request):
+        if "video_compresser_file" not in request.FILES:
+            return Response({"error": "No audio file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save the uploaded audio file
+        compress_rate = request.data.get("compress_rate", "")
+        print("data type", compress_rate)
+        all_files = request.FILES['video_compresser_file']
+        media_dir = os.path.join(settings.BASE_DIR, 'media')
+        os.makedirs(media_dir, exist_ok=True)
+        file_path = os.path.join(media_dir, all_files.name)
+        with open(file_path, 'wb+') as destination:
+            for chunk in all_files.chunks():
+                destination.write(chunk)
+
+        task = Video_Compress_Celery.delay(file_path,compress_rate)
+      # Poll for the task result (not ideal for long tasks, but works for shorter ones)
+        task_result = AsyncResult(task.id)
+        print('task_result', task_result)
+        while task_result.state in ["PENDING", "STARTED"]:
+            time.sleep(2)  # Wait for 2 seconds before checking again
+            task_result = AsyncResult(task.id)
+
+
+        # Return result once task is complete
+        if task_result.state == "SUCCESS":
+            return Response({"status": "Completed", "result": task_result.result}, status=status.HTTP_200_OK)
+        elif task_result.state == "FAILURE":
+            return Response({"status": "Failed", "error": str(task_result.info)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"status": task_result.state}, status=status.HTTP_202_ACCEPTED)
 
 
 

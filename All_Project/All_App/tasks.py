@@ -112,6 +112,95 @@ def Video_Converter_Celery(file_path, video_format):
 
 
 @shared_task
+def Video_Compress_Celery(file_path, compress_rate):
+    file_path = Path(file_path)
+    start_time = time.time()
+    output_filename = f"{file_path.stem}_compressed.mp4"
+
+    script_dir = Path(__file__).resolve().parent  # Path of the current script
+
+    # Get the parent directory two levels above the script's directory
+    parent_dir = script_dir.parent.parent  # Go up two levels from the script's directory
+
+    # Define the relative path from the parent directory
+    relative_path = 'shared_storage/Compress_videos'
+
+    # Combine the parent directory with the relative path
+    shared_storage_dir = parent_dir / relative_path
+
+    # Create the directory if it doesn't exist
+    shared_storage_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create the full output path
+    output_path = shared_storage_dir / output_filename     
+    compress_rate = float(compress_rate)
+    try:
+        # Get video information
+        probe = ffmpeg.probe(str(file_path))
+        logger.info(f"Probe result: {probe}")
+        
+        # Set default compression settings based on compression_rate
+        crf_value = int(18 + (compress_rate / 100.0) * 10)
+        
+        # Build FFmpeg command with proper parameters
+        stream = (
+            ffmpeg
+            .input(str(file_path))
+            .output(
+                str(output_path),
+                acodec='aac',
+                vcodec='libx264',
+                preset='medium',
+                crf=str(crf_value)
+            )
+        )
+        
+        # Run the compression
+        logger.info(f"Starting FFmpeg compression with CRF {crf_value}...")
+        ffmpeg.run(stream, capture_stderr=True, overwrite_output=True)
+        logger.info("Compression completed")
+        
+        # Verify the output file
+        if not output_path.exists():
+            raise Exception("Output file was not created")
+        
+        if output_path.stat().st_size == 0:
+            raise Exception("Output file is empty")
+            
+        # Get file sizes for comparison
+        original_size = os.path.getsize(str(file_path))
+        compressed_size = os.path.getsize(str(output_path))
+        compression_ratio = ((original_size - compressed_size) / original_size) * 100
+        
+        # Clean up input file
+        os.remove(file_path)
+        
+        # Calculate elapsed time
+        elapsed_time = round(time.time() - start_time, 2)
+        
+        return {
+            "filename": output_filename,
+            "original_size": f"{original_size / (1024*1024):.2f} MB",
+            "compressed_size": f"{compressed_size / (1024*1024):.2f} MB",
+            "compression_ratio": f"{compression_ratio:.1f}%",
+            "compression_time": elapsed_time,
+            "file_path": f"{output_path}/{output_filename}",
+        }
+        
+    except ffmpeg.Error as e:
+        error_message = e.stderr.decode() if e.stderr else str(e)
+        logger.error(f"FFmpeg error: {error_message}")
+
+        # if os.path.exists(str(file_path)):
+        #     os.remove(file_path)
+        # return Response(
+        #     status_code=500,
+        #     content={"error": f"Compression error: {error_message}"}
+        # )
+
+
+
+@shared_task
 def Text_Translation_celery(data_type,src_lang,tgt_lang,text_query,file_path):
     if data_type == "text":
         print("inside text query")

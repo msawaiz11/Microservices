@@ -413,7 +413,88 @@
 
                             </div>
 
-                            <div class="tab-pane fade" id="pills-video_compression" role="tabpanel" aria-labelledby="pills-video_compression-tab">...</div>
+                            <div class="tab-pane fade" id="pills-video_compression" role="tabpanel" aria-labelledby="pills-video_compression-tab">
+
+
+                                <form id="video_compresser" enctype="multipart/form-data">
+                                    <div class="row">
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-4">
+    
+                                         
+                                                <label for="formatSelect" class="form-label">Select file</label>
+                                                <input type="file" id="video_compresser_file" name="video_converter_file" required class="form-control">
+                                            
+                                                <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img mt-3" id="loader_for_fakevideo" width="80px" style="display: none;">
+                                           
+    
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="formatSelect" class="form-label">Select Progress</label>
+                                                <div class="position-relative">
+                                                    <!-- Slider Input -->
+                                                    <input type="range" 
+                                                           class="form-range" id="compressionRate" min="25" 
+                                                           max="100" step="25" value="50" aria-valuemin="25" aria-valuemax="100" 
+                                                           aria-valuenow="50">
+                                            
+                                                    <!-- Scale Markers -->
+                                                    <div class="slider-scale position-absolute w-100">
+                                                        <div class="slider-markers d-flex justify-content-between">
+                                                            <span data-value="25"></span>
+                                                            <span data-value="50"></span>
+                                                            <span data-value="75"></span>
+                                                            <span data-value="100"></span>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <!-- Slider Labels -->
+                                                    <div class="slider-labels d-flex justify-content-between mt-2">
+                                                        <span>25%</span>
+                                                        <span>50%</span>
+                                                        <span>75%</span>
+                                                        <span>100%</span>
+                                                    </div>
+                                                </div>
+                                           
+
+
+
+                                            
+                                        </div>
+                                        <!-- <div class="col-md-2"> <button type="submit" id="converter_submit" class="btn btn-secondary mt-3">Upload</button></div> -->
+                                        <div class="col-md-2 d-flex flex-column justify-content-center">
+                                            <button type="submit" id="compresser_submit" class="btn btn-secondary mt-3">Upload</button>
+                                        </div>
+                                        
+                                    </div>
+                                  
+                                </form>
+    
+
+                                <div class="row mt-3">
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-8">
+    
+    
+                                        <div class="progress" id="progressBarContainer_compresser" style="display:none;">
+                                            <div class="progress-bar" id="progressBar_compresser" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                          </div>
+            
+                                        <p id="statusMessage_video_compresser" class="text-white"></p>
+    
+    
+                                    </div>
+    
+                                    <div class="col-md-2"></div>
+                                </div>
+
+                                
+
+
+
+
+                            </div>
                           
                           </div>
 

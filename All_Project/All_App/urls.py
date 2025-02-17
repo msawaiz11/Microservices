@@ -9,6 +9,7 @@ urlpatterns = [
     path('Text_Translation/', Text_Translation.as_view(), name='Text_Translation'),
     path('Audio_Transcription/', Audio_Transcription.as_view(),name='Audio_Transcription'),
     path('Deep_Video_Detection/', Deep_Video_Detection.as_view(), name='Deep_Video_Detection'),
-    path('Video_Converter/', Video_Converter_Api.as_view(), name='Video_Converter')
+    path('Video_Converter/', Video_Converter_Api.as_view(), name='Video_Converter'),
+    path('Video_Compresser/', Video_Compresser.as_view(), name='Video_Compresser')
 
 ]

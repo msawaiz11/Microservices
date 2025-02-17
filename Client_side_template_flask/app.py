@@ -19,8 +19,7 @@ Django_Video_Translation_Api = "http://localhost:8000/api/Text_Translation/"
 Django_Video_Transcription_Api = "http://localhost:8000/api/Audio_Transcription/"
 Django_Fake_Video_Api = "http://localhost:8000/api/Deep_Video_Detection/"
 Django_Video_Converter_Api = "http://localhost:8000/api/Video_Converter/"
-
-
+Django_Video_Compresser_Api = "http://localhost:8000/api/Video_Compresser/"
 
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
@@ -38,12 +37,16 @@ script_dir = Path(__file__).resolve().parent  # Path of the current script
 parent_dir = script_dir.parent  # Go up two levels from the script's directory
 
 # Define the relative path to the shared storage directory
-relative_path = 'shared_storage/Converted_videos'
+converted_path = 'shared_storage/Converted_videos'
+
+compress_path = 'shared_storage/Compress_videos'
 
 # Combine the parent directory with the relative path
-shared_storage_dir = parent_dir / relative_path
+shared_storage_dir_for_converted = parent_dir / converted_path
 
-print('shared_storage dir', shared_storage_dir)
+shared_storage_dir_for_compresser = parent_dir / compress_path
+
+
 
 
 @app.route('/')
@@ -185,7 +188,7 @@ from flask import send_from_directory
 
 @app.route('/download/<filename>')
 def download_video(filename):
-    directory = shared_storage_dir  # Use the constructed path here
+    directory = shared_storage_dir_for_converted  # Use the constructed path here
     print(f"Looking for {filename} in directory {directory}")
 
     # Check if the file exists
@@ -195,6 +198,24 @@ def download_video(filename):
         return "File not found", 404
 
     return send_from_directory(directory, filename, as_attachment=True)
+
+
+
+
+
+@app.route('/download_compress/<filename>')
+def download_compress_video(filename):
+    directory = shared_storage_dir_for_compresser  # Use the constructed path here
+    print(f"Looking for {filename} in directory {directory}")
+
+    # Check if the file exists
+    file_path = directory / filename
+    if not file_path.exists():
+        print(f"File {filename} not found at {file_path}")
+        return "File not found", 404
+
+    return send_from_directory(directory, filename, as_attachment=True)
+
 
 
 
@@ -231,6 +252,43 @@ def video_converter():
         except requests.exceptions.JSONDecodeError:
             return jsonify({"error": "Invalid response from server"}), 500
 
+
+
+
+
+
+
+
+@app.route('/Video_Compresser', methods=['POST'])
+def video_compresser():
+    if request.method == 'POST':
+        if 'video_compresser_file' not in request.files:
+            return jsonify({"error": "No Video file provided"}), 400
+
+        file = request.files['video_compresser_file']
+        compress_rate = request.form.get('compress_rate')
+        print("compress_rate", compress_rate)
+        files = {'video_compresser_file': (file.filename, file.stream, file.mimetype)}
+        print('files', files)
+        response = requests.post(Django_Video_Compresser_Api, files=files, data={"compress_rate":compress_rate})
+        try:
+                result = response.json()
+                if response.status_code == 200 and "result" in result:
+                    file_path = result["result"].get('file_path')
+                    filename = result["result"].get('filename')
+                    download_url2 = request.host_url + 'download_compress/' + result["result"]["filename"]
+                    print("download_url2", download_url2)
+
+                    return jsonify({
+                            "status": "Completed",
+                            "filename": filename,
+                            "download_url": download_url2
+                        })
+
+                    # return response.json(), response.status_code
+            
+        except requests.exceptions.JSONDecodeError:
+            return jsonify({"error": "Invalid response from server"}), 500
 
 
 
