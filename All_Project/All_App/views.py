@@ -14,7 +14,8 @@ from All_App.utils.utils import (file_already_processed, mark_file_as_processed,
 
 from All_App.tasks import (Audio_Video_Transcription_celery, Text_Translation_celery,
                             analyze_video, video_summarize_celery ,
-                            retrieve_and_generate_response_celery, Video_Converter_Celery, Video_Compress_Celery)
+                            retrieve_and_generate_response_celery,
+                              Video_Converter_Celery, Video_Compress_Celery, Object_Detection_Celery)
 
 ##### rag libraries #####
 from dotenv import load_dotenv
@@ -421,3 +422,53 @@ class Deep_Video_Detection(APIView):
             return Response({"status": "Failed", "error": str(task_result.info)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({"message": "File uploasded processed", "file_path": file_path}, status=status.HTTP_201_CREATED)
+    
+
+
+
+
+
+class Object_Detection_Api(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request):
+        if "object_detection_file" not in request.FILES:
+            return Response({"error": "No audio file provided"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        all_files = request.FILES['object_detection_file']
+
+        # Get the checkbox names and values from the JSON body
+        check_box_names = request.data.get("check_box_names", [])
+        check_box_values = request.data.get("check_box_values", [])
+
+        print('checkbox names and values:', check_box_names, check_box_values)
+
+        if not check_box_names or not check_box_values:
+            return Response({"error": "Missing checkbox names or values"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Process the file (save to disk)
+        media_dir = os.path.join(settings.BASE_DIR, 'media')
+        os.makedirs(media_dir, exist_ok=True)
+        file_path = os.path.join(media_dir, all_files.name)
+        with open(file_path, 'wb+') as destination:
+            for chunk in all_files.chunks():
+                destination.write(chunk)
+
+        # Proceed with the object detection task using the Celery task
+        task = Object_Detection_Celery.delay(file_path, check_box_names, check_box_values)
+        print('Task started:', task)
+
+        task_result = AsyncResult(task.id)
+        print('task_result', task_result)
+        while task_result.state in ["PENDING", "STARTED"]:
+            time.sleep(2)  # Wait for 2 seconds before checking again
+            task_result = AsyncResult(task.id)
+
+
+        # Return result once task is complete
+        if task_result.state == "SUCCESS":
+            return Response({"status": "Completed", "result": task_result.result}, status=status.HTTP_200_OK)
+        elif task_result.state == "FAILURE":
+            return Response({"status": "Failed", "error": str(task_result.info)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"status": task_result.state}, status=status.HTTP_202_ACCEPTED)
