@@ -695,7 +695,6 @@ $(document).ready(function(){
                     } else {
                         $("#statusMessage_video_compresser").text("No result found.");
                     }
-                    // https://github.com/msawaiz11/Microservices
 
 
 
@@ -713,4 +712,72 @@ $(document).ready(function(){
 
 
         // video compresser jquery code close //
+
+
+
+        // object detection jquery code //
+
+
+
+
+
+        $(document).on("submit", "#detection_file", function (event) {
+           
+            $("#detection_submit").prop('disabled', true);
+            console.log("Form submitted via event delegation");
+            event.preventDefault();
+
+
+            var selectedValues = [];
+            $('input[type="checkbox"]:checked').each(function () {
+                var value = $(this).val();
+                var name = $(this).next('label').text();  // Get the label text associated with the checkbox
+                selectedValues.push({ value: value, name: name });  // Sto
+
+
+            });
+    
+            console.log("Checkbox values on form submit:", selectedValues);
+
+
+            $("#object_detection_text").text('');
+            $("#status").text('');
+            var formData = new FormData();
+            var fileInput = $("#object_detection_file")[0].files[0];
+            console.log("fileinput", fileInput);
+            if (!fileInput) {
+                $("#object_detection_text").text("Please select a file.");
+                return;
+            }
+
+            formData.append("object_detection_file", fileInput);
+            formData.append("selected_checkboxes", JSON.stringify(selectedValues));
+            console.log("Sending request...");
+
+            $.ajax({
+                url: "/object_detection",
+                type: "POST",
+                data: formData,
+                processData: false, // Prevent jQuery from processing data
+                contentType: false, // Let the browser set the content type
+                success: function(response) {
+                    $("#fake_submit").prop('disabled', false);
+                    $("#loader_for_fakevideo").hide();
+                    console.log("response", response);
+                
+       
+                },
+                
+                error: function(xhr) {
+                    $("#object_detection_text").text("Error: " + xhr.responseJSON.error);
+                }
+            });
+
+
+        });
+
+
+
+
+        // object detection jquery code close //
 })

@@ -41,7 +41,12 @@
                         <button class="nav-link" id="pills-video_tool-tab" data-bs-toggle="pill" data-bs-target="#pills-video_tool" type="button" role="tab" aria-controls="pills-video_tool" aria-selected="true">Video Tools</button>
                       </li>
                       
-  
+
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-object_detection-tab" data-bs-toggle="pill" data-bs-target="#pills-object_detection" type="button" role="tab" aria-controls="pills-object_detection" aria-selected="true">Object Detection</button>
+                      </li>
+
+
                       
 
                 </ul>
@@ -51,7 +56,7 @@
                             <div class="col-md-6 border border-white p-5">
                                 <h3 class="text-center">Rag Input Data</h3>
 
-                                <h2>Upload</h2>
+                                <h4 class="text-white">Upload</h4>
                                 <form id="uploadForm">
                                     <input type="file" id="allFile" name="all_files" required class="form-control">
                                     <button type="submit" class="btn btn-secondary mt-3">Upload</button>
@@ -59,7 +64,7 @@
 
                             </div>
                             <div class="col-md-6 border border-white p-5">
-                                <h3 class="text-center">Rag Response</h3>
+                                <h3 class="text-center text-white">Rag Response</h3>
                                 <h2>Results</h2>
                                 <form id="queryForm">
                                     <input type="text" id="user_query" name="query" placeholder="Enter your query" class="form-control">
@@ -114,7 +119,7 @@
                                     <div class="col-md-2"></div>
 
                                     <div class="col-md-4">
-                                        <h4 class="text-center">Source language</h4>
+                                        <h4 class="text-center text-white">Source language</h4>
 
                                         <select class="form-select" aria-label="Default select example" id="src_language">
                                             <option selected value="">Open this select menu</option>
@@ -127,7 +132,7 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <h4 class="text-center">Target language</h4>
+                                        <h4 class="text-center text-white">Target language</h4>
 
                                         <select class="form-select" aria-label="Default select example" id="tgt_language">
                                             <option selected>Open this select menu</option>
@@ -190,7 +195,7 @@
                                         <div class="col-md-2"></div>
     
                                         <div class="col-md-4">
-                                            <h4 class="text-center">Source language</h4>
+                                            <h4 class="text-center text-white mb-2">Source language</h4>
     
                                             <select class="form-select" aria-label="Default select example" id="src_language_file">
                                                 <option selected value="">Open this select menu</option>
@@ -203,7 +208,7 @@
                                         </div>
     
                                         <div class="col-md-4">
-                                            <h4 class="text-center">Target language</h4>
+                                            <h4 class="text-center text-white mb-2">Target language</h4>
     
                                             <select class="form-select" aria-label="Default select example" id="tgt_language_file">
                                                 <option selected>Open this select menu</option>
@@ -259,7 +264,7 @@
                          
                             <div class="col-md-4">
 
-                                <label>Select Source language</label>
+                                <label class="text-white mb-2">Select Source language</label>
                                 <select class="form-select" aria-label="Default select example" id="trans_language">
                                     <option selected>Open this select menu</option>
                                     <option value="en">English</option>
@@ -269,7 +274,7 @@
 
                             </div>
                             <div class="col-md-6">
-                                <label>Select Audio file</label>
+                                <label class="text-white mb-2">Select Audio file</label>
                                 <input type="file" id="audio_file" name="audio_file" required class="form-control">
 
                             </div>
@@ -338,8 +343,7 @@
 
 
                     <div class="tab-pane fade" id="pills-video_tool" role="tabpanel" aria-labelledby="pills-video_tool-tab">
-                        <h3>Video tool</h3>
-
+                    
 
                         <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
                             <li class="nav-item" role="presentation">
@@ -363,7 +367,7 @@
                                     <div class="col-md-4">
 
                                      
-                                            <label for="formatSelect" class="form-label">Select file</label>
+                                            <label for="formatSelect" class="form-label text-white">Select file</label>
                                             <input type="file" id="video_converter_file" name="video_converter_file" required class="form-control">
                                         
                                             <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img mt-3" id="loader_for_fakevideo" width="80px" style="display: none;">
@@ -372,7 +376,7 @@
                                     </div>
                                     <div class="col-md-4">
 
-                                        <label for="video_format" class="form-label">Target Format</label>
+                                        <label for="video_format" class="form-label text-white">Target Format</label>
                                         <select class="form-select" id="video_format" required>
                                             <option value="" selected>Select format</option>
                                             <option value="mp4">MP4</option>
@@ -422,7 +426,7 @@
                                         <div class="col-md-4">
     
                                          
-                                                <label for="formatSelect" class="form-label">Select file</label>
+                                                <label for="formatSelect" class="form-label text-white">Select file</label>
                                                 <input type="file" id="video_compresser_file" name="video_converter_file" required class="form-control">
                                             
                                                 <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img mt-3" id="loader_for_fakevideo" width="80px" style="display: none;">
@@ -430,7 +434,7 @@
     
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="formatSelect" class="form-label">Select Progress</label>
+                                            <label for="formatSelect" class="form-label text-white">Select Compression</label>
                                                 <div class="position-relative">
                                                     <!-- Slider Input -->
                                                     <input type="range" 
@@ -508,6 +512,107 @@
 
 
 
+
+
+
+
+
+                    <div class="tab-pane fade" id="pills-object_detection" role="tabpanel" aria-labelledby="pills-object_detection-tab">
+                        <h3>Object Detection</h3>
+                        <form id="detection_file" class="mt-4" style="gap: 10px;">
+                        <div class="row">
+
+                         
+                            <div class="col-md-2"></div>
+                            
+                            <div class="col-md-8">
+
+                                
+                                <label for="formatSelectObject" class="form-label text-white">Select file</label>
+                                <input type="file" id="object_detection_file" name="object_detection_file" required class="form-control">
+
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="person" value="1">
+                                    <label class="form-check-label" for="person">person</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="bicycle" value="2">
+                                    <label class="form-check-label" for="bicycle">bicycle</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="car" value="3">
+                                    <label class="form-check-label" for="car">car</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="motorcycle" value="4">
+                                    <label class="form-check-label" for="motorcycle">motorcycle</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="truck" value="8">
+                                    <label class="form-check-label" for="truck">truck</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="number_plate" value="1">
+                                    <label class="form-check-label" for="number_plate">Number_Plate</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="backpack" value="25">
+                                    <label class="form-check-label" for="backpack">backpack</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="handbag" value="26">
+                                    <label class="form-check-label" for="handbag">handbag</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="suitcase" value="27">
+                                    <label class="form-check-label" for="suitcase">suitcase</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="cell_phone" value="66">
+                                    <label class="form-check-label" for="cell phone">cell phone</label>
+                                  </div>
+
+                                  
+
+
+
+                               
+
+
+
+                                <button type="submit" id="detection_submit" class="btn btn-secondary mt-3">submit</button>
+                            </div>
+
+                            <div class="col-md-2">
+                                <p id="object_detection_text"></p>
+                            </div>
+                           
+                        </div>
+                    </form>
+
+                      
+
+                    </div>
+
+
+
+
+
+
+                    
                 </div>
 
             </div>

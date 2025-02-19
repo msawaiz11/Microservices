@@ -20,6 +20,7 @@ Django_Video_Transcription_Api = "http://localhost:8000/api/Audio_Transcription/
 Django_Fake_Video_Api = "http://localhost:8000/api/Deep_Video_Detection/"
 Django_Video_Converter_Api = "http://localhost:8000/api/Video_Converter/"
 Django_Video_Compresser_Api = "http://localhost:8000/api/Video_Compresser/"
+Django_Object_Detection_Api = "http://localhost:8000/api/Object_Detection_Api/"
 
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
@@ -351,6 +352,49 @@ def fake_video():
             return jsonify({"error": "Invalid response from server"}), 500
     
     return render_template('fakevideo.html')
+
+
+
+@app.route('/object_detection', methods=['GET', 'POST'])
+def detection():
+    print("fake video")
+    if request.method == 'POST':
+        print('inside post')
+        if 'object_detection_file' not in request.files:
+            return jsonify({"error": "No Video file provided"}), 400
+
+        selected_checkboxes = request.form.get('selected_checkboxes')
+
+        if selected_checkboxes:
+            # Convert the selected checkboxes data from JSON string to a Python list
+            import json
+            selected_checkboxes = json.loads(selected_checkboxes)
+            
+            # Print or process the selected checkboxes
+            print("Selected checkboxes (value and name):", selected_checkboxes)
+            
+            for checkbox in selected_checkboxes:
+                print(f"Value: {checkbox['value']}, Name: {checkbox['name']}")
+        else:
+            return jsonify({'error': 'No checkboxes selected'}), 400
+
+        file = request.files['object_detection_file']
+        files = {'object_detection_file': (file.filename, file.stream, file.mimetype)}
+
+        # Send the checkbox names and values as JSON (ensure this is separate from the file data)
+        data = {
+            'check_box_names': json.dumps([checkbox['name'] for checkbox in selected_checkboxes]),  # Send as JSON string
+            'check_box_values': json.dumps([checkbox['value'] for checkbox in selected_checkboxes])  # Send as JSON string
+        }
+
+        # Send the request with both files and form-data (NOT json)
+        response = requests.post(Django_Object_Detection_Api, files=files, data=data)
+
+        try:
+            return response.json(), response.status_code
+        except requests.exceptions.JSONDecodeError:
+            return jsonify({"error": "Invalid response from server"}), 500
+
 
 if __name__ == '__main__':
     socketio.run(app, port=8585)
