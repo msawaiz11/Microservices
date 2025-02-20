@@ -531,69 +531,6 @@
                                 <label for="formatSelectObject" class="form-label text-white">Select file</label>
                                 <input type="file" id="object_detection_file" name="object_detection_file" required class="form-control">
 
-
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="person" value="1">
-                                    <label class="form-check-label" for="person">person</label>
-                                  </div>
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="bicycle" value="2">
-                                    <label class="form-check-label" for="bicycle">bicycle</label>
-                                  </div>
-
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="car" value="3">
-                                    <label class="form-check-label" for="car">car</label>
-                                  </div>
-
-
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="motorcycle" value="4">
-                                    <label class="form-check-label" for="motorcycle">motorcycle</label>
-                                  </div>
-
-
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="truck" value="8">
-                                    <label class="form-check-label" for="truck">truck</label>
-                                  </div>
-
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="number_plate" value="1">
-                                    <label class="form-check-label" for="number_plate">Number_Plate</label>
-                                  </div>
-
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="backpack" value="25">
-                                    <label class="form-check-label" for="backpack">backpack</label>
-                                  </div>
-
-
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="handbag" value="26">
-                                    <label class="form-check-label" for="handbag">handbag</label>
-                                  </div>
-
-
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="suitcase" value="27">
-                                    <label class="form-check-label" for="suitcase">suitcase</label>
-                                  </div>
-
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="cell_phone" value="66">
-                                    <label class="form-check-label" for="cell phone">cell phone</label>
-                                  </div>
-
-                                  
-
-
-
-                               
-
-
-
-                                <button type="submit" id="detection_submit" class="btn btn-secondary mt-3">submit</button>
                             </div>
 
                             <div class="col-md-2">
@@ -601,8 +538,118 @@
                             </div>
                            
                         </div>
+
+
+                        <div class="row mt-3">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+
+
+
+                                <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="person" value="1">
+                                    <label class="form-check-label" for="person">person</label>
+                                  </div>
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="bicycle" value="2">
+                                    <label class="form-check-label" for="bicycle">bicycle</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="car" value="3">
+                                    <label class="form-check-label" for="car">car</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="motorcycle" value="4">
+                                    <label class="form-check-label" for="motorcycle">motorcycle</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="truck" value="8">
+                                    <label class="form-check-label" for="truck">truck</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="number_plate" value="1">
+                                    <label class="form-check-label" for="number_plate">Number_Plate</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="backpack" value="25">
+                                    <label class="form-check-label" for="backpack">backpack</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="handbag" value="26">
+                                    <label class="form-check-label" for="handbag">handbag</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="suitcase" value="27">
+                                    <label class="form-check-label" for="suitcase">suitcase</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="cell_phone" value="66">
+                                    <label class="form-check-label" for="cell phone">cell phone</label>
+                                  </div>
+
+
+
+
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-2"></div>
+
+                            <div class="col-md-2">
+                                <button type="submit" id="detection_submit" class="btn btn-secondary mt-3">submit</button>
+
+                            </div>
+                            <div class="col-md-6">
+
+                                <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img mt-3" id="loader_for_object_detection" width="80px" style="display: none;">
+
+                            </div>
+
+                            
+                        </div>
                     </form>
 
+
+                    <div class="container mt-4" id="table_results" style="display: none;">
+
+                        <h2 class="text-center text-white">Detection Results</h2>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Class</th>
+                                            <th>Track ID</th>
+                                            <th>Confidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detectionTable">
+                                        <!-- Data will be inserted here by jQuery -->
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+          
+                    </div>
                       
 
                     </div>
