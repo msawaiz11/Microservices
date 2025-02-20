@@ -722,6 +722,8 @@ $(document).ready(function(){
 
 
         $(document).on("submit", "#detection_file", function (event) {
+
+            $("#loader_for_object_detection").show();
            
             $("#detection_submit").prop('disabled', true);
             console.log("Form submitted via event delegation");
@@ -761,11 +763,38 @@ $(document).ready(function(){
                 processData: false, // Prevent jQuery from processing data
                 contentType: false, // Let the browser set the content type
                 success: function(response) {
-                    $("#fake_submit").prop('disabled', false);
-                    $("#loader_for_fakevideo").hide();
-                    console.log("response", response);
+                    $("#detection_submit").prop('disabled', false);
+                    $("#table_results").show();
+                    $("#loader_for_object_detection").hide();
+                    let message = response.result.message;  // Get message
+                    let detections = response.result.results;  // Get detections array
                 
-       
+                
+                    // Show message in an alert or div (optional)
+                    $("#detectionMessage").text(message);  
+                
+                    // Clear the table
+                    $("#detectionTable").empty();
+                
+                    if (!Array.isArray(detections) || detections.length === 0) {
+                        $("#detectionTable").append("<tr><td colspan='6' class='text-center'>No detections found.</td></tr>");
+                    } else {
+                       
+                        detections.forEach(function(item) {
+                            let row = `
+                                <tr>
+                                    <td>${item[0]}</td>  <!-- Date -->
+                                    <td>${item[1]}</td>  <!-- Time -->
+                                    <td>${item[2]}</td>  <!-- Class -->
+                                    <td>${item[3]}</td>  <!-- Track ID -->
+                                    <td>${(item[4] * 100).toFixed(2)}%</td>  <!-- Confidence -->
+                                </tr>
+                            `;
+                            $("#detectionTable").append(row);
+                        });
+
+
+                    }
                 },
                 
                 error: function(xhr) {
