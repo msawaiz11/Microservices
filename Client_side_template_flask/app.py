@@ -3,7 +3,6 @@ import json
 from flask import Flask, render_template, request, jsonify, Response
 from flask_socketio import SocketIO, emit
 import requests
-import threading
 
 # import logging
 #   # Patches the socket, threading, and other parts for eventlet
@@ -21,7 +20,8 @@ Django_Fake_Video_Api = "http://localhost:8000/api/Deep_Video_Detection/"
 Django_Video_Converter_Api = "http://localhost:8000/api/Video_Converter/"
 Django_Video_Compresser_Api = "http://localhost:8000/api/Video_Compresser/"
 Django_Object_Detection_Api = "http://localhost:8000/api/Object_Detection_Api/"
-
+Django_Object_Enhance_Api = "http://localhost:8000/api/Object_Enhance_Api/"
+import shutil
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
 import threading
@@ -396,6 +396,88 @@ def detection():
             return jsonify({"error": "Invalid response from server"}), 500
 
 
+
+
+@app.route('/object_enhance', methods=['GET','POST'])
+def object_enhance():
+    if request.method == 'POST':
+        print('inside post')
+        if 'object_detection_file' not in request.files:
+            return jsonify({"error": "No Video file provided"}), 400
+
+        file = request.files['object_detection_file']
+        data_type = request.form.get('type')
+        if data_type == "image_file":
+            data_type = {"type": "image_file"} 
+            files = {'object_detection_file': (file.filename, file.stream, file.mimetype)}
+
+            response = requests.post(Django_Object_Enhance_Api, files=files, data=data_type)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                file_path = response_data["result"]["file_path"]
+                file_name = response_data["result"]["filename"]
+                static_folder = os.path.join(app.root_path, 'static', 'enhanced_files')
+                os.makedirs(static_folder, exist_ok=True)  # Ensure folder exists
+                
+                file_path = os.path.normpath(file_path)
+
+                # # Destination path inside Flask static folder
+                static_file_path = os.path.join(static_folder, file_name)
+
+                shutil.copy(file_path, static_file_path)
+
+                
+                try:
+                    os.remove(file_path)
+                    print(f"Deleted original file: {file_path}")
+                except Exception as e:
+                    print(f"Error deleting file {file_path}: {e}")
+
+                # print("file_path", file_path)
+                try:
+                    return jsonify({
+                        "file_url": f"/static/enhanced_images/{file_name}",
+                        "status": "Completed"
+                    })
+                    # return response.json(), response.status_code
+                except requests.exceptions.JSONDecodeError:
+                    return jsonify({"error": "Invalid response from server"}), 500
+            
+        elif data_type == "video_file":
+            data_type = {"type": "video_file"} 
+            files = {'object_detection_file': (file.filename, file.stream, file.mimetype)}
+            response = requests.post(Django_Object_Enhance_Api, files=files, data=data_type)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                file_path = response_data["result"]["file_path"]
+                file_name = response_data["result"]["filename"]
+                static_folder = os.path.join(app.root_path, 'static', 'enhanced_images')
+                os.makedirs(static_folder, exist_ok=True)  # Ensure folder exists
+                
+                file_path = os.path.normpath(file_path)
+
+                # # Destination path inside Flask static folder
+                static_file_path = os.path.join(static_folder, file_name)
+
+                shutil.copy(file_path, static_file_path)
+
+                
+                try:
+                    os.remove(file_path)
+                    print(f"Deleted original file: {file_path}")
+                except Exception as e:
+                    print(f"Error deleting file {file_path}: {e}")
+
+                # print("file_path", file_path)
+                try:
+                    return jsonify({
+                        "file_url": f"/static/enhanced_images/{file_name}",
+                        "status": "Completed"
+                    })
+                    # return response.json(), response.status_code
+                except requests.exceptions.JSONDecodeError:
+                    return jsonify({"error": "Invalid response from server"}), 500
 if __name__ == '__main__':
     socketio.run(app, port=8585)
-    # socketio.run(app, host='0.0.0.0', port=8585, debug=True)
