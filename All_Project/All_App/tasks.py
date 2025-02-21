@@ -17,6 +17,8 @@ import logging
 logger = logging.getLogger(__name__)
 from pathlib import Path
 from django.conf import settings
+from PIL import Image
+from realesrgan_ncnn_py import Realesrgan
 
 from datetime import datetime, timedelta
 from All_App.utils.feekvideo import load_detection_model, predict_frames, MODEL_PATH
@@ -25,6 +27,7 @@ from All_App.utils.extraction_functions import All_Extraction
 from All_App.utils.utils import get_video_duration
 from All_App.utils.object_detection_new_roi import (get_timestamp, process_frame,numberplate_model,
                                                     CONFIDENCE_THRESHOLD, yolo_model, config,compute_iou, save_detection)
+
 
 
 @shared_task
@@ -361,7 +364,7 @@ object_max_areas = {}  # Stores maximum area seen for each tracked object
 object_entry_frames = {}
 AREA_GROWTH_THRESHOLD = 0.2
 STABLE_THRESHOLD = 3
-from collections import deque
+
 
 
 
@@ -373,6 +376,7 @@ import os
 from datetime import datetime
 from collections import deque
 from celery import shared_task
+import shutil
 
 # Define missing variables (Ensure they are set correctly in your real implementation)
 object_buffers = {}
@@ -524,4 +528,113 @@ def Object_Detection_Celery(video_path, check_box_names, selected_classes):
         cap.release() 
             
     cap.release()
+    try:
+        shutil.rmtree(output_folder)
+        print(f"Successfully removed folder: {output_folder}")
+    except Exception as e:
+        print(f"Error while deleting folder {output_folder}: {e}")
+
     return {"message": "Detection completed", "results": detections_list}
+
+
+
+
+
+
+
+
+@shared_task
+def Object_Enhance_Celery(file_path, file_type):
+    script_dir = Path(__file__).resolve().parent
+    parent_dir = script_dir.parent.parent
+    relative_path = 'shared_storage/Enhance_File'
+    shared_storage_dir = parent_dir / relative_path
+
+    # Ensure the output directory exists
+    shared_storage_dir.mkdir(parents=True, exist_ok=True)
+
+    file_name, file_ext = os.path.splitext(os.path.basename(file_path))
+    enhanced_file_name = f"{file_name}_enhanced{file_ext}"  # ✅ Define the name for both images and videos
+    enhanced_file_path = str(shared_storage_dir / enhanced_file_name)  # ✅ Ensure it is defined before use
+    realesrgan = Realesrgan(gpuid=0, model=0)
+
+    if file_type == "image_file":
+        
+        with Image.open(file_path) as image:
+            image = realesrgan.process_pil(image)
+            # Save the image correctly
+            image.save(str(enhanced_file_path), quality=95)  # Convert Path object to string
+
+        print("Enhanced file saved at:", enhanced_file_path)
+
+        try:
+            os.remove(file_path)
+            print(f"Deleted original file: {file_path}")
+        except Exception as e:
+            print(f"Error deleting file {file_path}: {e}")
+
+    elif file_type == "video_file":  
+        # Define target resolution or scale factor
+        target_resolution = (1920, 1080)  # Set to (width, height) or "2x"
+
+        # Read input video
+        cap = cv2.VideoCapture(file_path)
+        fps = int(cap.get(cv2.CAP_PROP_FPS))  # Get video FPS
+        video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        if video_width == 0 or video_height == 0:
+            print("\n❌ Error: Unable to read video file! Check if the file is corrupted.\n")
+            exit(1)
+
+        # Determine scaling factor
+        aspect_ratio = video_width / video_height
+
+        if isinstance(target_resolution, str):  # Handles "2x", "3x" scaling cases
+            scale_factor = int(target_resolution[0])
+            final_width = video_width * scale_factor
+            final_height = video_height * scale_factor
+        else:
+            final_width, final_height = target_resolution
+            scale_factor = max(final_width / video_width, final_height / video_height)
+
+        # Ensure final resolution is even
+        while (int(video_width * scale_factor) % 2 != 0) or (int(video_height * scale_factor) % 2 != 0):
+            scale_factor += 0.01
+
+        # Final adjusted width and height
+        final_width = int(video_width * scale_factor)
+        final_height = int(video_height * scale_factor)
+
+        # Define video writer for output
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # Codec
+        out = cv2.VideoWriter(enhanced_file_path, fourcc, fps, (final_width, final_height))
+
+        print(f"Processing video frames... Upscaling to {final_width}x{final_height}")
+
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break  
+
+            image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            enhanced_image = realesrgan.process_pil(image)
+            enhanced_frame = cv2.cvtColor(np.array(enhanced_image), cv2.COLOR_RGB2BGR)
+            enhanced_frame = cv2.resize(enhanced_frame, (final_width, final_height), interpolation=cv2.INTER_CUBIC)
+            out.write(enhanced_frame)
+
+        cap.release()
+        out.release()
+        print("Enhanced video saved at:", enhanced_file_path)
+
+    # ✅ Delete the original file after processing
+    try:
+        os.remove(file_path)
+        print(f"Deleted original file: {file_path}")
+    except Exception as e:
+        print(f"Error deleting file {file_path}: {e}")
+
+    return {
+        "filename": enhanced_file_name,
+        "file_path": enhanced_file_path
+    }

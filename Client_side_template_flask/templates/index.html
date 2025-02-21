@@ -17,23 +17,23 @@
             <div class="col-md-2"></div>
             <div class="col-md-8">
                 <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link active btn-info" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Rag Data & Response</button>
+                    <li class="nav-item" role="presentation" style="display: none;">
+                      <button class="nav-link  btn-info" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Rag Data & Response</button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" style="display: none;">
                       <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Video Summarization</button>
                     </li>
 
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" style="display: none;">
                       <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Translation</button>
                     </li>
 
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" style="display: none;">
                         <button class="nav-link" id="pills-transcription-tab" data-bs-toggle="pill" data-bs-target="#pills-transcription" type="button" role="tab" aria-controls="pills-transcription" aria-selected="false">Transcription</button>
                       </li>
 
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pills-fake_video-tab" data-bs-toggle="pill" data-bs-target="#pills-fake_video" type="button" role="tab" aria-controls="pills-fake_video" aria-selected="false">Fake Video Detection</button>
+                      <li class="nav-item" role="presentation" >
+                        <button class="nav-link active" id="pills-fake_video-tab" data-bs-toggle="pill" data-bs-target="#pills-fake_video" type="button" role="tab" aria-controls="pills-fake_video" aria-selected="false">Fake Video Detection</button>
                       </li>
 
 
@@ -47,11 +47,16 @@
                       </li>
 
 
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-object_enhancement-tab" data-bs-toggle="pill" data-bs-target="#pills-object_enhancement" type="button" role="tab" aria-controls="pills-object_enhancement" aria-selected="true">Object Enhancement</button>
+                      </li>
+
+
                       
 
                 </ul>
                   <div class="tab-content" id="pills-tabContent">
-                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <div class="tab-pane fade" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
                         <div class="row">
                             <div class="col-md-6 border border-white p-5">
                                 <h3 class="text-center">Rag Input Data</h3>
@@ -318,7 +323,7 @@
                     </div>
 
 
-                    <div class="tab-pane fade" id="pills-fake_video" role="tabpanel" aria-labelledby="pills-fake_video-tab">
+                    <div class="tab-pane fade show active" id="pills-fake_video" role="tabpanel" aria-labelledby="pills-fake_video-tab">
                         
                         <h3>Fake video</h3>
 
@@ -653,6 +658,77 @@
                       
 
                     </div>
+
+
+
+                    <div class="tab-pane fade" id="pills-object_enhancement" role="tabpanel" aria-labelledby="pills-object_enhancement-tab">
+
+                        <h3>Object enhancment</h3>
+
+
+                        <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link active" id="pills-image_enhance-tab" data-bs-toggle="pill" data-bs-target="#pills-image_enhance" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Home</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link" id="pills-video_enhance-tab" data-bs-toggle="pill" data-bs-target="#pills-video_enhance" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Profile</button>
+                            </li>
+                        
+                          </ul>
+                          <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-image_enhance" role="tabpanel" aria-labelledby="pills-image_enhance-tab">
+                                <h2>image enahce</h2>
+
+                                <div class="row">
+                                    <form id="image_enhance_form" class="mt-4" style="gap: 10px;">
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-8">
+
+                                        <label for="formatSelectObject" class="form-label text-white">Select file</label>
+                                        <input type="file" id="image_enhance_file" name="image_enhance_file" required class="form-control">
+                                        <button type="submit" id="image_enhance_submit" class="btn btn-secondary mt-3">submit</button>
+
+                                        <p id="image_enhance_222" class="text-white"></p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <img id="enhancedImage" src="" alt="Enhanced Image" style="width: 300px; height: auto;">
+
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="pills-video_enhance" role="tabpanel" aria-labelledby="pills-video_enhance-tab">
+                                <h2>Video enahnce</h2>
+
+                                <div class="row">
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-8">
+
+
+
+                                        <form id="video_enhance_form" class="mt-4" style="gap: 10px;">
+                                            <div class="col-md-2"></div>
+                                            <div class="col-md-8">
+        
+                                                <label for="formatSelectObject" class="form-label text-white">Select file</label>
+                                                <input type="file" id="video_enhance_file" name="video_enhance_file" required class="form-control">
+                                                <button type="submit" id="video_enhance_submit" class="btn btn-secondary mt-3">submit</button>
+        
+                                                <p id="video_enhance_222" class="text-white"></p>
+                                            </div>
+                                            <div class="col-md-2"></div>
+                                            </form>
+
+
+                                        
+                                    </div>
+                                    <div class="col-md-2"></div>
+                                </div>
+                            </div>
+                       
+                          </div>
+                    
+                        </div>
 
 
 

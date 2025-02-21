@@ -727,6 +727,7 @@ $(document).ready(function(){
            
             $("#detection_submit").prop('disabled', true);
             console.log("Form submitted via event delegation");
+            $("#detectionTable").empty();
             event.preventDefault();
 
 
@@ -809,4 +810,113 @@ $(document).ready(function(){
 
 
         // object detection jquery code close //
+
+
+
+        // Image enhance jquery code open //
+
+
+
+        $(document).on("submit", "#image_enhance_form", function (event) {
+            $("#image_enhance_submit").prop('disabled', true);
+            console.log("Form submitted via event delegation");
+            event.preventDefault();
+            // Rest of your AJAX logic here...
+
+
+
+            var formData = new FormData();
+            var fileInput = $("#image_enhance_file")[0].files[0];
+            console.log("fileinput", fileInput);
+            if (!fileInput) {
+                $("#image_enhance_222").text("Please select a file.");
+                return;
+            }
+
+            formData.append("object_detection_file", fileInput);
+            formData.append('type', 'image_file')
+            console.log("Sending request...");
+
+            $.ajax({
+                url: "/object_enhance",
+                type: "POST",
+                data: formData,
+                processData: false, // Prevent jQuery from processing data
+                contentType: false, // Let the browser set the content type
+                success: function(response) {
+                   
+                    console.log("response", response);
+
+                    let imgElement = document.getElementById("enhancedImage");
+                    imgElement.src = response.file_url;  // Set the image source
+
+                },
+                
+                error: function(xhr) {
+                    $("#image_enhance_222").text("Error: " + xhr.responseJSON.error);
+                }
+            });
+
+
+        });
+
+
+
+
+
+        // Image enhance jquery code close //
+
+
+
+
+
+            // Video enhance jquery code open //
+
+
+
+            $(document).on("submit", "#video_enhance_form", function (event) {
+                $("#video_enhance_submit").prop('disabled', true);
+                console.log("Form submitted via event delegation");
+                event.preventDefault();
+                // Rest of your AJAX logic here...
+    
+    
+    
+                var formData = new FormData();
+                var fileInput = $("#video_enhance_file")[0].files[0];
+                console.log("fileinput", fileInput);
+                if (!fileInput) {
+                    $("#video_enhance_222").text("Please select a file.");
+                    return;
+                }
+    
+                formData.append("object_detection_file", fileInput);
+                formData.append('type', 'video_file')
+                console.log("Sending request...");
+    
+                $.ajax({
+                    url: "/object_enhance",
+                    type: "POST",
+                    data: formData,
+                    processData: false, // Prevent jQuery from processing data
+                    contentType: false, // Let the browser set the content type
+                    success: function(response) {
+                       
+                        console.log("response", response);
+                
+                    },
+                    
+                    error: function(xhr) {
+                        $("#video_enhance_222").text("Error: " + xhr.responseJSON.error);
+                    }
+                });
+    
+    
+            });
+    
+    
+    
+    
+    
+            // Video enhance jquery code close //
 })
