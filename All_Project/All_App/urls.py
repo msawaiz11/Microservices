@@ -13,4 +13,5 @@ urlpatterns = [
     path('Video_Compresser/', Video_Compresser.as_view(), name='Video_Compresser'),
     path('Object_Detection_Api/', Object_Detection_Api.as_view(), name='Object_Detection_Api'),
     path('Object_Enhance_Api/', Object_Enhance_Api.as_view(), name='Object_Enhance_Api'),
+    path('Crowd_Detection_Api/', Crowd_Detection_Api.as_view(), name='Crowd_Detection_Api')
 ]

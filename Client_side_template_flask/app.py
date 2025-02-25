@@ -21,6 +21,8 @@ Django_Video_Converter_Api = "http://localhost:8000/api/Video_Converter/"
 Django_Video_Compresser_Api = "http://localhost:8000/api/Video_Compresser/"
 Django_Object_Detection_Api = "http://localhost:8000/api/Object_Detection_Api/"
 Django_Object_Enhance_Api = "http://localhost:8000/api/Object_Enhance_Api/"
+Django_Crowd_Detection_Api = "http://localhost:8000/api/Crowd_Detection_Api/"
+
 import shutil
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
@@ -479,5 +481,104 @@ def object_enhance():
                     # return response.json(), response.status_code
                 except requests.exceptions.JSONDecodeError:
                     return jsonify({"error": "Invalid response from server"}), 500
+
+
+@app.route('/Crowd_Counting', methods=['GET','POST'])
+def Crowd_Counting():
+
+    if request.method == 'POST':
+        print('inside post')
+        if 'crowd_image_file' not in request.files:
+            return jsonify({"error": "No Video file provided"}), 400
+
+        file = request.files['crowd_image_file']
+        data_type = request.form.get('type')
+        if data_type == "image_file":
+            data_type = {"type": "image_file"} 
+            files = {'crowd_detection_file': (file.filename, file.stream, file.mimetype)}
+
+            response = requests.post(Django_Crowd_Detection_Api, files=files, data=data_type)
+            print('response', response)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                Density_map = response_data["result"]["Density_map"]
+                Density_count = response_data["result"]["Density_count"]
+                Density_map_image_name = response_data['result']['density_image_name']
+                Density_count_image_name = response_data['result']['density_count_image_name']
+
+
+
+                static_folder = os.path.join(app.root_path, 'static', 'crowd_image_detection')
+                os.makedirs(static_folder, exist_ok=True)  # Ensure folder exists
+                
+                file_path_density_map = os.path.normpath(Density_map)
+                file_path_density_count = os.path.normpath(Density_count)
+
+
+
+    
+
+            # Define destination paths
+                static_file_path_density_map = os.path.join(static_folder, Density_map_image_name)
+                static_file_path_density_count = os.path.join(static_folder, Density_count_image_name)
+
+
+            # Copy both files
+                shutil.copy(file_path_density_map, static_file_path_density_map)
+                shutil.copy(file_path_density_count, static_file_path_density_count)
+
+
+                folder_to_delete = os.path.dirname(file_path_density_map)
+
+                # Delete the entire folder **only once** if it exists
+                try:
+                    if os.path.exists(folder_to_delete):
+                        shutil.rmtree(folder_to_delete)
+                        print(f"Deleted folder: {folder_to_delete}")
+                    else:
+                        print(f"Folder does not exist: {folder_to_delete}")
+                except Exception as e:
+                    print(f"Error deleting folder: {e}")
+
+                # print("file_path", file_path)
+                try:
+                    return jsonify({
+                        "Density_map_image_path": f"/static/crowd_image_detection/{Density_map_image_name}",
+                        "Density_count_image_path":f"/static/crowd_image_detection/{Density_count_image_name}",
+                        "status": "Completed"
+                    })
+                    # return response.json(), response.status_code
+                except requests.exceptions.JSONDecodeError:
+                    return jsonify({"error": "Invalid response from server"}), 500
+
+
+
+
+        elif data_type == 'video_file':
+            data_type = {"type":"video_file"}
+
+            files = {'crowd_detection_file': (file.filename, file.stream, file.mimetype)}
+
+            response = requests.post(Django_Crowd_Detection_Api, files=files, data=data_type)
+            print('response', response)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                people_count = round(response_data['result'], 2)
+
+                try:
+                    return jsonify({
+                        "people_count": people_count,
+                      
+                        "status": response_data['status']
+                    })
+                    # return response.json(), response.status_code
+                except requests.exceptions.JSONDecodeError:
+                    return jsonify({"error": "Invalid response from server"}), 500
+            
+
+
+
 if __name__ == '__main__':
     socketio.run(app, port=8585)

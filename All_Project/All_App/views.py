@@ -15,7 +15,8 @@ from All_App.utils.utils import (file_already_processed, mark_file_as_processed,
 from All_App.tasks import (Audio_Video_Transcription_celery, Text_Translation_celery,
                             analyze_video, video_summarize_celery ,
                             retrieve_and_generate_response_celery,
-                              Video_Converter_Celery, Video_Compress_Celery, Object_Detection_Celery,Object_Enhance_Celery)
+                              Video_Converter_Celery, Video_Compress_Celery, 
+                              Object_Detection_Celery,Object_Enhance_Celery, Crowd_Detection_Celery)
 
 ##### rag libraries #####
 from dotenv import load_dotenv
@@ -508,4 +509,39 @@ class Object_Enhance_Api(APIView):
 
         return Response({"message": "File uploasded processed", "file_path": file_path}, status=status.HTTP_201_CREATED)
 
+
+
+class Crowd_Detection_Api(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request):
+        if "crowd_detection_file" not in request.FILES:
+            return Response({"error": "No image file provided"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        all_files = request.FILES['crowd_detection_file']
+        file_type = request.data.get("type", "")
+        print("file type", file_type)
+        media_dir = os.path.join(settings.BASE_DIR, 'media')
+        os.makedirs(media_dir, exist_ok=True)
+        file_path = os.path.join(media_dir, all_files.name)
+        with open(file_path, 'wb+') as destination:
+            for chunk in all_files.chunks():
+                destination.write(chunk)
+
+        task = Crowd_Detection_Celery.delay(file_path, file_type)
+        print('task', task)
+
+        task_result = AsyncResult(task.id)
+        print('task_result', task_result)
+        while task_result.state in ["PENDING", "STARTED"]:
+            time.sleep(2)  # Wait for 2 seconds before checking again
+            task_result = AsyncResult(task.id)
+
+        # Return result once task is complete
+        if task_result.state == "SUCCESS":
+            return Response({"status": "Completed", "result": task_result.result}, status=status.HTTP_200_OK)
+        elif task_result.state == "FAILURE":
+            return Response({"status": "Failed", "error": str(task_result.info)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"message": "File uploasded processed", "file_path": file_path}, status=status.HTTP_201_CREATED)
 

@@ -919,4 +919,110 @@ $(document).ready(function(){
     
     
             // Video enhance jquery code close //
+
+
+            // crowd counting image jquery code open //
+
+
+
+            $("#crowd_counting_image").on("submit", function(event) {
+               
+                $("#crowd_image_submit").prop('disabled', true);
+                event.preventDefault();  // Prevent default form submission
+              
+                var formData = new FormData();
+                var fileInput = $("#crowd_image_file")[0].files[0];
+                console.log("fileinput", fileInput);
+                if (!fileInput) {
+                    $("#video_enhance_222").text("Please select a file.");
+                    return;
+                }
+    
+                formData.append("crowd_image_file", fileInput);
+                formData.append('type', 'image_file')
+                console.log("Sending request...");
+
+                $.ajax({
+                    url: "/Crowd_Counting",
+                    type: "POST",
+                    data: formData,
+                    processData: false, // Prevent jQuery from processing data
+                    contentType: false, // Let the browser set the content type
+                    success: function(response) {
+                       
+                        console.log("response", response);
+                
+                    },
+                    
+                    error: function(xhr) {
+                        $("#video_enhance_222").text("Error: " + xhr.responseJSON.error);
+                    }
+                });
+
+
+            });
+
+
+
+
+
+            // crowd counting image jquery code close //
+
+
+
+
+
+
+
+
+            
+            // crowd counting video jquery code open //
+
+
+
+            $("#crowd_counting_video").on("submit", function(event) {
+               
+                $("#crowd_video_submit").prop('disabled', true);
+                event.preventDefault();  // Prevent default form submission
+              
+                var formData = new FormData();
+                var fileInput = $("#crowd_video_file")[0].files[0];
+                console.log("fileinput", fileInput);
+                if (!fileInput) {
+                    $("#video_enhance_222").text("Please select a file.");
+                    return;
+                }
+    
+                formData.append("crowd_image_file", fileInput);
+                formData.append('type', 'video_file')
+                console.log("Sending request...");
+
+                $.ajax({
+                    url: "/Crowd_Counting",
+                    type: "POST",
+                    data: formData,
+                    processData: false, // Prevent jQuery from processing data
+                    contentType: false, // Let the browser set the content type
+                    success: function(response) {
+                       
+                        console.log("response", response);
+                
+                    },
+                    
+                    error: function(xhr) {
+                        $("#video_enhance_222").text("Error: " + xhr.responseJSON.error);
+                    }
+                });
+
+
+            });
+
+
+
+
+
+            // crowd counting video jquery code close //
+
+
+
 })

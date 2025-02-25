@@ -19,15 +19,16 @@ from pathlib import Path
 from django.conf import settings
 from PIL import Image
 from realesrgan_ncnn_py import Realesrgan
-
+import torch
 from datetime import datetime, timedelta
 from All_App.utils.feekvideo import load_detection_model, predict_frames, MODEL_PATH
 from All_App.utils.rag_output import multi_query_retriever, combine_docs_chain
 from All_App.utils.extraction_functions import All_Extraction
 from All_App.utils.utils import get_video_duration
-from All_App.utils.object_detection_new_roi import (get_timestamp, process_frame,numberplate_model,
-                                                    CONFIDENCE_THRESHOLD, yolo_model, config,compute_iou, save_detection)
-
+from All_App.utils.object_detection_new_roi import (get_timestamp, process_frame,numberplate_model, yolo_model, config)
+from All_App.utils.test_one_image import overlay_count_on_image, img_test, load_model, model_paths
+from All_App.utils.pipeline_video_crowd import MODEL_PATHS, generate_density_map,load_model_video
+import matplotlib.pyplot as plt
 
 
 @shared_task
@@ -638,3 +639,123 @@ def Object_Enhance_Celery(file_path, file_type):
         "filename": enhanced_file_name,
         "file_path": enhanced_file_path
     }
+
+@shared_task
+def Crowd_Detection_Celery(file_path, file_type):
+    script_dir = Path(__file__).resolve().parent
+    parent_dir = script_dir.parent.parent
+    relative_path = 'shared_storage/crowd_detection_file'
+    shared_storage_dir = parent_dir / relative_path
+
+    # Ensure the output directory exists
+    shared_storage_dir.mkdir(parents=True, exist_ok=True)
+
+    
+    
+    if file_type == "image_file":
+        model = load_model(['MARNet'], model_paths, dataset='sha')
+        if torch.cuda.is_available():
+            model['MARNet'] = model['MARNet'].cuda()
+
+        base_name = os.path.splitext(os.path.basename(file_path))[0]
+        density_map_path = shared_storage_dir / f"{base_name}_density_map.png"
+        output_image_path = shared_storage_dir / f"{base_name}_output_with_count.jpg"
+
+        # Run the test function with the model and image path
+        dmp, total_count = img_test(model['MARNet'], file_path, divide=50, ds=1)
+
+        plt.imsave(str(density_map_path), dmp, cmap='hot')
+        print(f"Density map saved to {density_map_path}")
+
+        results = overlay_count_on_image(file_path, total_count, str(output_image_path))
+        results = Path(results)
+      
+        print('results', results)
+        density_map_path = Path(density_map_path)
+
+
+        return {
+            "Density_map" : str(density_map_path),
+            "Density_count": str(results),
+            'density_image_name':f"{base_name}_density_map.png",
+            'density_count_image_name': f"{base_name}_output_with_count.jpg",
+
+        }
+
+
+
+    
+    elif file_type == "video_file":
+
+        model = load_model_video('MARNet', MODEL_PATHS, dataset='sha')
+        if torch.cuda.is_available():
+            model = model.cuda()
+
+        # Set up video capture
+        cap = cv2.VideoCapture(file_path)
+        ret, frame = cap.read()
+        if not ret:
+            print("Error reading video.")
+            cap.release()
+            return
+
+        height, width = frame.shape[:2]
+        rect_height = 100  # Height of the rectangle
+        rect_y_position = height - rect_height  # Start from the bottom
+        saved_frame_counter = 0
+        total_people_count = 0  # Initialize total people count
+
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            # Define the rectangle position
+            rect_start = (0, rect_y_position)
+            rect_end = (width, rect_y_position + rect_height)
+
+            # Draw the rectangle on the current frame
+            cv2.rectangle(frame, rect_start, rect_end, (0, 0, 255), 2)
+
+            # Check if the top of the rectangle reaches the top of the frame
+            if rect_y_position <= 0:
+                # Generate density map and estimate people count for the current frame
+                dmp, frame_people_count = generate_density_map(model, frame)
+                total_people_count += frame_people_count
+
+                # Save the frame with the rectangle and density map
+                frame_filename = shared_storage_dir / f"saved_frame_{saved_frame_counter}.jpg"
+
+                cv2.imwrite(str(frame_filename),frame)
+                
+                saved_frame_counter += 1
+
+                # Save the density map as a heatmap image
+                density_map_filename = shared_storage_dir / f"density_map_{saved_frame_counter}.png"
+                plt.imsave(density_map_filename, dmp, cmap='hot')
+
+                # Reset the rectangle position to continue tracking
+                rect_y_position = height - rect_height
+
+
+                try:
+                    frame_filename = os.path.dirname(frame_filename)
+                    density_map_filename = os.path.dirname(density_map_filename)
+                    shutil.rmtree(frame_filename)
+                    shutil.rmtree(density_map_filename)
+                
+                except Exception as e:
+                    print("error", e)
+
+            # Move the rectangle up for the next frame
+            rect_y_position -=4  # Adjust the speed of movement here if necessary (1 to 10)
+
+
+
+
+
+
+
+        return total_people_count
+
+

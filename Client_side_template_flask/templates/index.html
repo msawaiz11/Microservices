@@ -52,6 +52,11 @@
                       </li>
 
 
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="crowd_counting-tab" data-bs-toggle="pill" data-bs-target="#pills-crowd_counting" type="button" role="tab" aria-controls="pills-object_enhancement" aria-selected="true">Crowd Detection</button>
+                      </li>
+
+
                       
 
                 </ul>
@@ -516,12 +521,6 @@
 
 
 
-
-
-
-
-
-
                     <div class="tab-pane fade" id="pills-object_detection" role="tabpanel" aria-labelledby="pills-object_detection-tab">
                         <h3>Object Detection</h3>
                         <form id="detection_file" class="mt-4" style="gap: 10px;">
@@ -668,10 +667,10 @@
 
                         <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
                             <li class="nav-item" role="presentation">
-                              <button class="nav-link active" id="pills-image_enhance-tab" data-bs-toggle="pill" data-bs-target="#pills-image_enhance" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Home</button>
+                              <button class="nav-link active" id="pills-image_enhance-tab" data-bs-toggle="pill" data-bs-target="#pills-image_enhance" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Image Enhancement</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                              <button class="nav-link" id="pills-video_enhance-tab" data-bs-toggle="pill" data-bs-target="#pills-video_enhance" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Profile</button>
+                              <button class="nav-link" id="pills-video_enhance-tab" data-bs-toggle="pill" data-bs-target="#pills-video_enhance" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Video Enhancement</button>
                             </li>
                         
                           </ul>
@@ -731,6 +730,107 @@
                         </div>
 
 
+
+                        
+
+                        <div class="tab-pane fade" id="pills-crowd_counting" role="tabpanel" aria-labelledby="crowd_counting-tab">
+                        
+
+                            <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                  <button class="nav-link active" id="pills-image_counting-tab" data-bs-toggle="pill" data-bs-target="#pills-image_counting" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Image Counting</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                  <button class="nav-link" id="pills-video_counting-tab" data-bs-toggle="pill" data-bs-target="#pills-video_counting" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Video Counting</button>
+                                </li>
+                              </ul>
+
+                              <div class="tab-content" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="pills-image_counting" role="tabpanel" aria-labelledby="pills-image_counting-tab">
+                                    <h2>Image Counting</h2>
+
+                                    <div class="row">
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-8">
+
+
+                                            <form id="crowd_counting_image" class="mt-4" style="gap: 10px;">
+                                                
+                        
+                                                    <div>
+                                                        <label class="text-white mb-2">Select Image file</label>
+                                                        <input type="file" id="crowd_image_file" name="crowd_image_file" required class="form-control">
+                        
+                                                    </div>
+                        
+                                                    <div class="col-md-1 justify-content-center align-items-center d-flex" style="height: 80px;">
+                        
+                                                        <button type="submit" id="crowd_image_submit" class="btn btn-secondary">Upload</button>
+                                                            
+                                                        <!-- Ensure loader is initially hidden -->
+                                                   
+                                                    </div>
+                                                 
+                        
+                                                    
+                                                   
+                                              
+                                            </form>
+
+
+
+
+                                        </div>
+                                        <div class="col-md-2"></div>
+                                    </div>
+
+                                </div>
+                                <div class="tab-pane fade" id="pills-video_counting" role="tabpanel" aria-labelledby="pills-video_counting-tab">
+                                    <h2>Video Counting</h2>
+
+                                    <div class="row">
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-8">
+
+                                            
+                                            <form id="crowd_counting_video" class="mt-4" style="gap: 10px;">
+                                                
+                        
+                                                <div>
+                                                    <label class="text-white mb-2">Select Video file</label>
+                                                    <input type="file" id="crowd_video_file" name="crowd_video_file" required class="form-control">
+                    
+                                                </div>
+                    
+                                                <div class="col-md-1 justify-content-center align-items-center d-flex" style="height: 80px;">
+                    
+                                                    <button type="submit" id="crowd_video_submit" class="btn btn-secondary">Upload</button>
+                                                        
+                                                    <!-- Ensure loader is initially hidden -->
+                                               
+                                                </div>
+                    
+                                          
+                                        </form>
+
+
+                                            
+
+                                            
+                                        </div>
+                                        <div class="col-md-2"></div>
+                                    </div>
+
+
+                                </div>
+     
+                              </div>
+
+
+
+                        </div>
+
+                        
 
 
 
