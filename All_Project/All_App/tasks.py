@@ -17,19 +17,19 @@ import logging
 logger = logging.getLogger(__name__)
 from pathlib import Path
 from django.conf import settings
-from PIL import Image
-from realesrgan_ncnn_py import Realesrgan
-import torch
-from datetime import datetime, timedelta
+
+
 from All_App.utils.feekvideo import load_detection_model, predict_frames, MODEL_PATH
 from All_App.utils.rag_output import multi_query_retriever, combine_docs_chain
 from All_App.utils.extraction_functions import All_Extraction
 from All_App.utils.utils import get_video_duration
-from All_App.utils.object_detection_new_roi import (get_timestamp, process_frame,numberplate_model, yolo_model, config)
-from All_App.utils.test_one_image import overlay_count_on_image, img_test, load_model, model_paths
-from All_App.utils.pipeline_video_crowd import MODEL_PATHS, generate_density_map,load_model_video
+from realesrgan_ncnn_py import Realesrgan
+from PIL import Image
+from All_App.utils.object_detection_new_roi import get_timestamp, yolo_model, numberplate_model,process_frame,config
+from All_App.utils.pipeline_video_crowd import load_model_video, MODEL_PATHS,generate_density_map
+from All_App.utils.test_one_image import load_model, model_paths, img_test, overlay_count_on_image
 import matplotlib.pyplot as plt
-
+import torch
 
 @shared_task
 def Audio_Video_Transcription_celery(Media_Path, language):
@@ -759,3 +759,286 @@ def Crowd_Detection_Celery(file_path, file_type):
         return total_people_count
 
 
+
+
+tracked_objects = {}  # Stores final saved ROIs
+object_buffers = {} 
+BUFFER_SIZE = 10 
+object_max_areas = {}  # Stores maximum area seen for each tracked object
+object_entry_frames = {}
+AREA_GROWTH_THRESHOLD = 0.2
+STABLE_THRESHOLD = 3
+
+
+
+
+
+
+
+import cv2
+import os
+from datetime import datetime
+from collections import deque
+from celery import shared_task
+import shutil
+
+# Define missing variables (Ensure they are set correctly in your real implementation)
+object_buffers = {}
+object_max_areas = {}
+object_entry_frames = {}
+
+@shared_task
+def Object_Detection_Celery(video_path, check_box_names, selected_classes):
+    print("Selected classes:", selected_classes)
+    print("Checkbox names:", check_box_names)
+    detections_list = []        
+
+    video_name = os.path.splitext(os.path.basename(video_path))[0]
+
+    # Create a unique output folder name
+    output_folder = os.path.join(os.getcwd(), f"{video_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+
+    # Create output folder
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Get video start time (current time for this example)
+    video_start_time = datetime.now()
+
+    # CSV file to store detections
+    csv_file = os.path.join(output_folder, f"{video_name}_detections.csv")
+
+
+
+
+
+
+    import ast
+    # Ensure check_box_names is always a list
+    if isinstance(check_box_names, str):
+        try:
+            check_box_names = ast.literal_eval(check_box_names)  # Convert string representation of a list
+        except (ValueError, SyntaxError):
+            check_box_names = [check_box_names]  # If it's a single string, treat it as a list
+
+    print(f"Checkbox names received: {check_box_names}")  
+
+    # Ensure selected_classes is always a list of integers
+    if isinstance(selected_classes, str):
+        try:
+            selected_classes = ast.literal_eval(selected_classes)  # Convert string representation of list
+            if isinstance(selected_classes, int):  
+                selected_classes = [selected_classes]  # Convert single integer to a list
+            elif isinstance(selected_classes, list):
+                selected_classes = [int(cls) for cls in selected_classes]  # Convert all elements to integers
+        except (ValueError, SyntaxError):
+            selected_classes = []  # Fallback to empty list
+
+    print(f"Processed selected_classes: {selected_classes}, Type: {type(selected_classes)}")  
+
+    # Logic to set handle_other_objects and handle_number_plate correctly
+    handle_other_objects = any(name != "Number_Plate" for name in check_box_names) if check_box_names else False
+    handle_number_plate = "Number_Plate" in check_box_names
+
+    print(f"handle_other_objects: {handle_other_objects}, handle_number_plate: {handle_number_plate}")
+
+
+
+
+
+    # Corrected condition
+    handle_other_objects = any(name != "Number_Plate" for name in check_box_names) if check_box_names else False
+    handle_number_plate = "Number_Plate" in check_box_names
+
+    print(f"Final handle_other_objects: {handle_other_objects}")  # Should be False if only "Number_Plate" exists
+    print(f"Final handle_number_plate: {handle_number_plate}")    # Should be True if "Number_Plate" is present
+
+
+
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        print("Error: Unable to open video file")
+        return {"error": "Invalid video file"}
+
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    MIN_FRAMES_BETWEEN_SAVES = fps * 2
+    video_start_time = datetime.now()
+    frame_count = 0
+
+    results = []
+    video_name = os.path.splitext(os.path.basename(video_path))[0]
+    output_folder = os.path.join(os.getcwd(), f"{video_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    os.makedirs(output_folder, exist_ok=True)
+
+    if handle_other_objects:
+        selected_numberplate_classes = None
+        # print("Processing other objects...")
+        # print("selected classes", selected_classes)
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            frame_count += 1
+            date, timestamp = get_timestamp(frame_count, fps, video_start_time)
+
+
+
+
+            frame_detections = process_frame(frame, frame_count, date, timestamp, yolo_model, numberplate_model,
+                                        tracked_objects, object_buffers, object_max_areas, config,
+                                        output_folder, csv_file, selected_classes,selected_numberplate_classes, video_path)
+
+
+
+            # print("frame_detections",frame_detections)
+
+            detections_list.extend(frame_detections)
+
+            # print("detelction list", detections_list)
+
+
+           
+
+        # print("Detection results:", results)
+
+    if handle_number_plate:
+        print("Handling number plate detection...")
+        # selected_numberplate_classes = "1"
+        selected_numberplate_classes = [1]
+        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  
+        frame_count = 0  # Reset frame count
+        
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                print("Error: Failed to read frame") 
+                break
+
+            frame_count += 1
+            date, timestamp = get_timestamp(frame_count, fps, video_start_time)
+
+            # print("Processing frame for number plate detection...")  # Debugging output
+            
+            frame_detections = process_frame(frame, frame_count, date, timestamp, yolo_model, numberplate_model,
+                                        tracked_objects, object_buffers, object_max_areas, config,
+                                        output_folder, csv_file,selected_classes,selected_numberplate_classes, video_path)
+
+            # print("frame_detections",frame_detections)
+
+            detections_list.extend(frame_detections)
+
+            # print("detelction list", detections_list)
+        
+        cap.release() 
+            
+    cap.release()
+    try:
+        shutil.rmtree(output_folder)
+        print(f"Successfully removed folder: {output_folder}")
+    except Exception as e:
+        print(f"Error while deleting folder {output_folder}: {e}")
+
+    return {"message": "Detection completed", "results": detections_list}
+
+
+
+
+
+
+
+
+@shared_task
+def Object_Enhance_Celery(file_path, file_type):
+    script_dir = Path(__file__).resolve().parent
+    parent_dir = script_dir.parent.parent
+    relative_path = 'shared_storage/Enhance_File'
+    shared_storage_dir = parent_dir / relative_path
+
+    # Ensure the output directory exists
+    shared_storage_dir.mkdir(parents=True, exist_ok=True)
+
+    file_name, file_ext = os.path.splitext(os.path.basename(file_path))
+    enhanced_file_name = f"{file_name}_enhanced{file_ext}"  # ✅ Define the name for both images and videos
+    enhanced_file_path = str(shared_storage_dir / enhanced_file_name)  # ✅ Ensure it is defined before use
+    realesrgan = Realesrgan(gpuid=0, model=0)
+
+    if file_type == "image_file":
+        
+        with Image.open(file_path) as image:
+            image = realesrgan.process_pil(image)
+            # Save the image correctly
+            image.save(str(enhanced_file_path), quality=95)  # Convert Path object to string
+
+        print("Enhanced file saved at:", enhanced_file_path)
+
+        try:
+            os.remove(file_path)
+            print(f"Deleted original file: {file_path}")
+        except Exception as e:
+            print(f"Error deleting file {file_path}: {e}")
+
+    elif file_type == "video_file":  
+        # Define target resolution or scale factor
+        target_resolution = (1920, 1080)  # Set to (width, height) or "2x"
+
+        # Read input video
+        cap = cv2.VideoCapture(file_path)
+        fps = int(cap.get(cv2.CAP_PROP_FPS))  # Get video FPS
+        video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        if video_width == 0 or video_height == 0:
+            print("\n❌ Error: Unable to read video file! Check if the file is corrupted.\n")
+            exit(1)
+
+        # Determine scaling factor
+        aspect_ratio = video_width / video_height
+
+        if isinstance(target_resolution, str):  # Handles "2x", "3x" scaling cases
+            scale_factor = int(target_resolution[0])
+            final_width = video_width * scale_factor
+            final_height = video_height * scale_factor
+        else:
+            final_width, final_height = target_resolution
+            scale_factor = max(final_width / video_width, final_height / video_height)
+
+        # Ensure final resolution is even
+        while (int(video_width * scale_factor) % 2 != 0) or (int(video_height * scale_factor) % 2 != 0):
+            scale_factor += 0.01
+
+        # Final adjusted width and height
+        final_width = int(video_width * scale_factor)
+        final_height = int(video_height * scale_factor)
+
+        # Define video writer for output
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # Codec
+        out = cv2.VideoWriter(enhanced_file_path, fourcc, fps, (final_width, final_height))
+
+        print(f"Processing video frames... Upscaling to {final_width}x{final_height}")
+
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break  
+
+            image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            enhanced_image = realesrgan.process_pil(image)
+            enhanced_frame = cv2.cvtColor(np.array(enhanced_image), cv2.COLOR_RGB2BGR)
+            enhanced_frame = cv2.resize(enhanced_frame, (final_width, final_height), interpolation=cv2.INTER_CUBIC)
+            out.write(enhanced_frame)
+
+        cap.release()
+        out.release()
+        print("Enhanced video saved at:", enhanced_file_path)
+
+    # ✅ Delete the original file after processing
+    try:
+        os.remove(file_path)
+        print(f"Deleted original file: {file_path}")
+    except Exception as e:
+        print(f"Error deleting file {file_path}: {e}")
+
+    return {
+        "filename": enhanced_file_name,
+        "file_path": enhanced_file_path
+    }

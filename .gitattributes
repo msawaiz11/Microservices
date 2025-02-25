@@ -1,3 +1,0 @@
-weights/* filter=lfs diff=lfs merge=lfs -text
-All_Project/weights/*.pth filter=lfs diff=lfs merge=lfs -text
-All_Project/weights/*.pt filter=lfs diff=lfs merge=lfs -text

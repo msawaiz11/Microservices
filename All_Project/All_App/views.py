@@ -16,7 +16,9 @@ from All_App.tasks import (Audio_Video_Transcription_celery, Text_Translation_ce
                             analyze_video, video_summarize_celery ,
                             retrieve_and_generate_response_celery,
                               Video_Converter_Celery, Video_Compress_Celery, 
-                              Object_Detection_Celery,Object_Enhance_Celery, Crowd_Detection_Celery)
+                              Object_Detection_Celery,Object_Enhance_Celery, Crowd_Detection_Celery,
+                              Video_Converter_Celery, Video_Compress_Celery, Object_Detection_Celery,Object_Enhance_Celery)
+
 
 ##### rag libraries #####
 from dotenv import load_dotenv
@@ -24,6 +26,7 @@ from langchain_community.document_loaders import (
     PyPDFLoader, Docx2txtLoader, UnstructuredExcelLoader, UnstructuredHTMLLoader,
     UnstructuredMarkdownLoader, UnstructuredImageLoader
 )
+
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from All_App.llama_models import Models
 # from All_App.utils.rag_output import retrieve_and_generate_response
@@ -508,8 +511,6 @@ class Object_Enhance_Api(APIView):
             return Response({"status": "Failed", "error": str(task_result.info)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({"message": "File uploasded processed", "file_path": file_path}, status=status.HTTP_201_CREATED)
-
-
 
 class Crowd_Detection_Api(APIView):
     parser_classes = (MultiPartParser, FormParser)
