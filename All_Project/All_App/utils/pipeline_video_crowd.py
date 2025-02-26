@@ -13,9 +13,10 @@ warnings.filterwarnings("ignore")
 MODEL_PATHS = {
     'sha': {
        
-        'MARNet': r" All_Project\weights\x_net.pth"
+        'MARNet': r"E:\P_M_services\All_Project\weights\x_net.pth"
     }
 }
+
 
 def preprocess_image(cv2im):
     mean = [0.485, 0.456, 0.406]

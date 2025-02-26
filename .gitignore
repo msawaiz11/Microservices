@@ -1,4 +1,7 @@
 # Ignore model files
+*.pt
 *.pth
 *.h5
-*.pt
+
+# Ignore XML files
+*.xml

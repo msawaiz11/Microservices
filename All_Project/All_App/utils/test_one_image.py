@@ -14,9 +14,11 @@ import matplotlib.pyplot as plt
 # sys.path.append(r"e:\MARUNet\modeling")
 
 # Set your pretrained model path here
+
 model_paths = {
     'sha': {
-        'MARNet': r" All_Project\weights\x_net.pth"
+
+        'MARNet': r"E:\P_M_services\All_Project\weights\x_net.pth"
     }
 }
 

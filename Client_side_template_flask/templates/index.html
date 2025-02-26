@@ -41,7 +41,21 @@
                         <button class="nav-link" id="pills-video_tool-tab" data-bs-toggle="pill" data-bs-target="#pills-video_tool" type="button" role="tab" aria-controls="pills-video_tool" aria-selected="true">Video Tools</button>
                       </li>
                       
-  
+
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-object_detection-tab" data-bs-toggle="pill" data-bs-target="#pills-object_detection" type="button" role="tab" aria-controls="pills-object_detection" aria-selected="true">Object Detection</button>
+                      </li>
+
+
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-object_enhancement-tab" data-bs-toggle="pill" data-bs-target="#pills-object_enhancement" type="button" role="tab" aria-controls="pills-object_enhancement" aria-selected="true">Object Enhancement</button>
+                      </li>
+
+
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-crowd_detection-tab" data-bs-toggle="pill" data-bs-target="#pills-crowd_detection" type="button" role="tab" aria-controls="pills-object_enhancement" aria-selected="true">Object Enhancement</button>
+                      </li>
+
                       
 
                 </ul>
@@ -506,6 +520,330 @@
 
 
 
+
+
+
+
+
+
+                    <div class="tab-pane fade" id="pills-object_detection" role="tabpanel" aria-labelledby="pills-object_detection-tab">
+                        <h3>Object Detection</h3>
+                        <form id="detection_file" class="mt-4" style="gap: 10px;">
+                        <div class="row">
+
+                         
+                            <div class="col-md-2"></div>
+                            
+                            <div class="col-md-8">
+
+                                
+                                <label for="formatSelectObject" class="form-label text-white">Select file</label>
+                                <input type="file" id="object_detection_file" name="object_detection_file" required class="form-control">
+
+                            </div>
+
+                            <div class="col-md-2">
+                                <p id="object_detection_text"></p>
+                            </div>
+                           
+                        </div>
+
+
+                        <div class="row mt-3">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+
+
+
+                                <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="person" value="1">
+                                    <label class="form-check-label" for="person">person</label>
+                                  </div>
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="bicycle" value="2">
+                                    <label class="form-check-label" for="bicycle">bicycle</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="car" value="3">
+                                    <label class="form-check-label" for="car">car</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="motorcycle" value="4">
+                                    <label class="form-check-label" for="motorcycle">motorcycle</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="truck" value="8">
+                                    <label class="form-check-label" for="truck">truck</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="number_plate" value="1">
+                                    <label class="form-check-label" for="number_plate">Number_Plate</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="backpack" value="25">
+                                    <label class="form-check-label" for="backpack">backpack</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="handbag" value="26">
+                                    <label class="form-check-label" for="handbag">handbag</label>
+                                  </div>
+
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="suitcase" value="27">
+                                    <label class="form-check-label" for="suitcase">suitcase</label>
+                                  </div>
+
+                                  <div class="form-check form-check-inline text-white">
+                                    <input class="form-check-input" type="checkbox" id="cell_phone" value="66">
+                                    <label class="form-check-label" for="cell phone">cell phone</label>
+                                  </div>
+
+
+
+
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-2"></div>
+
+                            <div class="col-md-2">
+                                <button type="submit" id="detection_submit" class="btn btn-secondary mt-3">submit</button>
+
+                            </div>
+                            <div class="col-md-6">
+
+                                <img src="../static/Pulse@1x-1.0s-200px-200px.gif" class="img mt-3" id="loader_for_object_detection" width="80px" style="display: none;">
+
+                            </div>
+
+                            
+                        </div>
+                    </form>
+
+
+                    <div class="container mt-4" id="table_results" style="display: none;">
+
+                        <h2 class="text-center text-white">Detection Results</h2>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Class</th>
+                                            <th>Track ID</th>
+                                            <th>Confidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detectionTable">
+                                        <!-- Data will be inserted here by jQuery -->
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+          
+                    </div>
+                      
+
+                    </div>
+
+
+
+                    <div class="tab-pane fade" id="pills-object_enhancement" role="tabpanel" aria-labelledby="pills-object_enhancement-tab">
+
+                        <h3>Object enhancment</h3>
+
+
+                        <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link active" id="pills-image_enhance-tab" data-bs-toggle="pill" data-bs-target="#pills-image_enhance" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Image Enhance</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                              <button class="nav-link" id="pills-video_enhance-tab" data-bs-toggle="pill" data-bs-target="#pills-video_enhance" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Video Enhance</button>
+                            </li>
+                        
+                          </ul>
+                          <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-image_enhance" role="tabpanel" aria-labelledby="pills-image_enhance-tab">
+                                <h2>image enahce</h2>
+
+                                <div class="row">
+                                    <form id="image_enhance_form" class="mt-4" style="gap: 10px;">
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-8">
+
+                                        <label for="formatSelectObject" class="form-label text-white">Select file</label>
+                                        <input type="file" id="image_enhance_file" name="image_enhance_file" required class="form-control">
+                                        <button type="submit" id="image_enhance_submit" class="btn btn-secondary mt-3">submit</button>
+
+                                        <p id="image_enhance_222" class="text-white"></p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <img id="enhancedImage" src="" alt="Enhanced Image" style="width: 300px; height: auto;" style="display: none;">
+
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="pills-video_enhance" role="tabpanel" aria-labelledby="pills-video_enhance-tab">
+                                <h2>Video enahnce</h2>
+
+                                <div class="row">
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-8">
+
+
+
+                                        <form id="video_enhance_form" class="mt-4" style="gap: 10px;">
+                                            <div class="col-md-2"></div>
+                                            <div class="col-md-8">
+        
+                                                <label for="formatSelectObject" class="form-label text-white">Select file</label>
+                                                <input type="file" id="video_enhance_file" name="video_enhance_file" required class="form-control">
+                                                <button type="submit" id="video_enhance_submit" class="btn btn-secondary mt-3">submit</button>
+        
+                                                <p id="video_enhance_222" class="text-white"></p>
+                                            </div>
+                                            <div class="col-md-2"></div>
+                                            </form>
+
+
+                                        
+                                    </div>
+                                    <div class="col-md-2"></div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-6">
+                                        <video id="enhancedVideo" controls style="display: none; width: 100%; max-width: 600px;">
+                                            <source id="videoSource" src="" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                        
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                </div>
+                            </div>
+                       
+                          </div>
+                    
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        <div class="tab-pane fade" id="pills-crowd_detection" role="tabpanel" aria-labelledby="pills-crowd_detection-tab">
+
+                            <h3>Object enhancment</h3>
+    
+    
+                            <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                  <button class="nav-link active" id="pills-image_crowd_detection-tab" data-bs-toggle="pill" data-bs-target="#pills-image_crowd_detection" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Image Crowd</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                  <button class="nav-link" id="pills-video_crowd_detection-tab" data-bs-toggle="pill" data-bs-target="#pills-video_crowd_detection" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Video Crowd</button>
+                                </li>
+                            
+                              </ul>
+                              <div class="tab-content" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="pills-image_crowd_detection" role="tabpanel" aria-labelledby="pills-image_crowd_detection-tab">
+                                    <h2>image crowd</h2>
+    
+                                    <div class="row">
+                                        <form id="image_crowd_form" class="mt-4" style="gap: 10px;">
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-8">
+    
+                                            <label for="formatSelectObject" class="form-label text-white">Select file</label>
+                                            <input type="file" id="image_crowd_file" name="image_crowd_file" required class="form-control">
+                                            <button type="submit" id="image_crowd_submit" class="btn btn-secondary mt-3">submit</button>
+    
+
+                                        </div>
+                                        <div class="col-md-2">
+                                           
+    
+                                        </div>
+                                        </form>
+                                    </div>
+
+                                    <div class="row mt-4">
+                                        <div class="col-md-3"></div>
+                                        <div class="col-md-6 d-flex">
+                                            <div>
+                                                <h3 id="density_map" style="display: none;">Density Map</h3>
+                                                <img id="density_map_img" src="" alt="Density Map Image" width="300" style="display: none;">
+                                            </div>
+                                            <div>
+                                                <h3 id="density_count" style="display: none;">Density Count</h3>
+                                                <img id="density_count_img" src="" alt="Density Count Image" width="300" style="display: none;">
+                                            </div>
+
+                                            
+                                        </div>
+                                        <div class="col-md-3"></div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pills-video_crowd_detection" role="tabpanel" aria-labelledby="pills-video_crowd_detection-tab">
+                                    <h2>Video Crowd</h2>
+    
+                                    <div class="row">
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-8">
+    
+    
+    
+                                            <form id="video_crowd_form" class="mt-4" style="gap: 10px;">
+                                                <div class="col-md-2"></div>
+                                                <div class="col-md-8">
+            
+                                                    <label for="formatSelectObject" class="form-label text-white">Select file</label>
+                                                    <input type="file" id="video_crowd_file" name="video_crowd_file" required class="form-control">
+                                                    <button type="submit" id="video_crowd_submit" class="btn btn-secondary mt-3">submit</button>
+            
+                           
+                                                </div>
+                                                <div class="col-md-2"></div>
+                                                </form>
+    
+    
+                                            
+                                        </div>
+                                        <div class="col-md-2"></div>
+                                    </div>
+                                </div>
+                           
+                              </div>
+                        
+                            </div>
+    
                     
                 </div>
 

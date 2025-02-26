@@ -512,6 +512,9 @@ class Object_Enhance_Api(APIView):
 
         return Response({"message": "File uploasded processed", "file_path": file_path}, status=status.HTTP_201_CREATED)
 
+
+
+
 class Crowd_Detection_Api(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
@@ -545,4 +548,7 @@ class Crowd_Detection_Api(APIView):
             return Response({"status": "Failed", "error": str(task_result.info)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({"message": "File uploasded processed", "file_path": file_path}, status=status.HTTP_201_CREATED)
+
+
+
 

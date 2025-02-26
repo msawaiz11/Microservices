@@ -19,7 +19,10 @@ Django_Video_Transcription_Api = "http://localhost:8000/api/Audio_Transcription/
 Django_Fake_Video_Api = "http://localhost:8000/api/Deep_Video_Detection/"
 Django_Video_Converter_Api = "http://localhost:8000/api/Video_Converter/"
 Django_Video_Compresser_Api = "http://localhost:8000/api/Video_Compresser/"
-
+Django_Object_Detection_Api = "http://localhost:8000/api/Object_Detection_Api/"
+Django_Object_Enhance_Api = "http://localhost:8000/api/Object_Enhance_Api/"
+Django_Crowd_Detection_Api = "http://localhost:8000/api/Crowd_Detection_Api/"
+import shutil
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
 import threading
@@ -350,6 +353,236 @@ def fake_video():
             return jsonify({"error": "Invalid response from server"}), 500
     
     return render_template('fakevideo.html')
+
+
+
+@app.route('/object_detection', methods=['GET', 'POST'])
+def detection():
+    print("fake video")
+    if request.method == 'POST':
+        print('inside post')
+        if 'object_detection_file' not in request.files:
+            return jsonify({"error": "No Video file provided"}), 400
+
+        selected_checkboxes = request.form.get('selected_checkboxes')
+
+        if selected_checkboxes:
+            # Convert the selected checkboxes data from JSON string to a Python list
+            import json
+            selected_checkboxes = json.loads(selected_checkboxes)
+            
+            # Print or process the selected checkboxes
+            print("Selected checkboxes (value and name):", selected_checkboxes)
+            
+            for checkbox in selected_checkboxes:
+                print(f"Value: {checkbox['value']}, Name: {checkbox['name']}")
+        else:
+            return jsonify({'error': 'No checkboxes selected'}), 400
+
+        file = request.files['object_detection_file']
+        files = {'object_detection_file': (file.filename, file.stream, file.mimetype)}
+
+        # Send the checkbox names and values as JSON (ensure this is separate from the file data)
+        data = {
+            'check_box_names': json.dumps([checkbox['name'] for checkbox in selected_checkboxes]),  # Send as JSON string
+            'check_box_values': json.dumps([checkbox['value'] for checkbox in selected_checkboxes])  # Send as JSON string
+        }
+
+        # Send the request with both files and form-data (NOT json)
+        response = requests.post(Django_Object_Detection_Api, files=files, data=data)
+
+        try:
+            return response.json(), response.status_code
+        except requests.exceptions.JSONDecodeError:
+            return jsonify({"error": "Invalid response from server"}), 500
+
+
+
+
+@app.route('/object_enhance', methods=['GET','POST'])
+def object_enhance():
+    if request.method == 'POST':
+        print('inside post')
+        if 'object_detection_file' not in request.files:
+            return jsonify({"error": "No Video file provided"}), 400
+
+        file = request.files['object_detection_file']
+        data_type = request.form.get('type')
+        if data_type == "image_file":
+            data_type = {"type": "image_file"} 
+            files = {'object_detection_file': (file.filename, file.stream, file.mimetype)}
+
+            response = requests.post(Django_Object_Enhance_Api, files=files, data=data_type)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                file_path = response_data["result"]["file_path"]
+                file_name = response_data["result"]["filename"]
+                static_folder = os.path.join(app.root_path, 'static', 'enhanced_images')
+                os.makedirs(static_folder, exist_ok=True)  # Ensure folder exists
+                
+                file_path = os.path.normpath(file_path)
+
+                # # Destination path inside Flask static folder
+                static_file_path = os.path.join(static_folder, file_name)
+
+                shutil.copy(file_path, static_file_path)
+
+                print("filepath", file_path)
+                print('static file path', static_file_path)
+                
+                try:
+                    pass
+                    os.remove(file_path)
+                    print(f"Deleted original file: {file_path}")
+                except Exception as e:
+                    print(f"Error deleting file {file_path}: {e}")
+
+                # print("file_path", file_path)
+                try:
+                    return jsonify({
+                        "file_url": f"/static/enhanced_images/{file_name}",
+                        "status": "Completed"
+                    })
+                    # return response.json(), response.status_code
+                except requests.exceptions.JSONDecodeError:
+                    return jsonify({"error": "Invalid response from server"}), 500
+            
+        elif data_type == "video_file":
+            data_type = {"type": "video_file"} 
+            files = {'object_detection_file': (file.filename, file.stream, file.mimetype)}
+            response = requests.post(Django_Object_Enhance_Api, files=files, data=data_type)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                file_path = response_data["result"]["file_path"]
+                file_name = response_data["result"]["filename"]
+                static_folder = os.path.join(app.root_path, 'static', 'enhanced_videos')
+                os.makedirs(static_folder, exist_ok=True)  # Ensure folder exists
+                
+                file_path = os.path.normpath(file_path)
+
+                # # Destination path inside Flask static folder
+                static_file_path = os.path.join(static_folder, file_name)
+
+                shutil.copy(file_path, static_file_path)
+
+                
+                try:
+                    os.remove(file_path)
+                    print(f"Deleted original file: {file_path}")
+                except Exception as e:
+                    print(f"Error deleting file {file_path}: {e}")
+
+                # print("file_path", file_path)
+                try:
+                    return jsonify({
+                        "file_url": f"/static/enhanced_videos/{file_name}",
+                        "status": "Completed"
+                    })
+                    # return response.json(), response.status_code
+                except requests.exceptions.JSONDecodeError:
+                    return jsonify({"error": "Invalid response from server"}), 500
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@app.route('/Crowd_Detection', methods=['GET','POST'])
+def Crowd_Detection():
+    if request.method == 'POST':
+        print('inside post')
+
+
+        file = request.files['crowd_detection_files']
+        data_type = request.form.get('type')
+        if data_type == "image_file":
+            data_type = {"type": "image_file"} 
+            files = {'crowd_detection_file': (file.filename, file.stream, file.mimetype)}
+
+            response = requests.post(Django_Crowd_Detection_Api, files=files, data=data_type)
+
+            if response.status_code == 200:
+                response_data = response.json()
+
+                
+                Density_map_path = response_data["result"]["Density_map"]
+                Density_count = response_data["result"]["Density_count"]
+                
+                Density_map_name = response_data['result']['density_image_name']
+                Density_count_name = response_data['result']['density_count_image_name']
+
+
+
+
+                static_folder_for_map = os.path.join(app.root_path, 'static', 'map_images')
+                os.makedirs(static_folder_for_map, exist_ok=True)  # Ensure folder exists
+                
+                static_folder_for_count = os.path.join(app.root_path, 'static', 'count_images')
+                os.makedirs(static_folder_for_count, exist_ok=True)  # Ensure folder exists
+
+
+
+                Density_map_path = os.path.normpath(Density_map_path)
+                Density_count = os.path.normpath(Density_count)
+
+
+                shutil.copy(Density_map_path, os.path.join(static_folder_for_map, Density_map_name))
+                shutil.copy(Density_count, os.path.join(static_folder_for_count, Density_count_name))              
+                
+                try:
+                    Density_map_path = os.path.dirname(Density_map_path)
+                    Density_count = os.path.dirname(Density_count)
+
+                    if os.path.exists(Density_map_path):
+                        shutil.rmtree(Density_map_path)
+
+                except Exception as e:
+                    print(f"Error deleting file : {e}")
+
+                # print("file_path", file_path)
+                try:
+                    return jsonify({
+                        "Density_map_name":f"/static/map_images/{Density_map_name}",
+                        "Density_count_name": f"/static/count_images/{Density_count_name}",
+                        "status": "Completed"
+                    })
+                    # return response.json(), response.status_code
+                except requests.exceptions.JSONDecodeError:
+                    return jsonify({"error": "Invalid response from server"}), 500
+                    # return response.json(), response.status_code
+
+            
+        elif data_type == "video_file":
+            print('video file')
+            data_type = {"type": "video_file"} 
+            files = {'crowd_detection_file': (file.filename, file.stream, file.mimetype)}
+            response = requests.post(Django_Crowd_Detection_Api, files=files, data=data_type)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                response_data = round(response_data['result'], 2)
+                print("response_data", response_data)
+                # print("file_path", file_path)
+                try:
+                    return jsonify({
+                        "people_count":response_data,
+                        "status": "Completed"
+                    })
+                    # return response.json(), response.status_code
+                except requests.exceptions.JSONDecodeError:
+                    return jsonify({"error": "Invalid response from server"}), 500
+
+
 
 if __name__ == '__main__':
     socketio.run(app, port=8585)
